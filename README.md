@@ -4,7 +4,7 @@ A dashboard card with one slider and two handles. The left handle sets one numbe
 
 It looks and works like Home Assistant's own number slider and follows your theme. The lower value can never go above the upper value.
 
-Available in English and Danish.
+The card editor is available in English and Danish.
 
 ## Install
 
@@ -58,9 +58,9 @@ When you pick one entity of a pair in the card picker, for example `input_number
 | `step` | How much a value changes per step. By default the step of `entity_min`. |
 | `unit` | Unit shown after the values. By default the unit of the entities. |
 | `show` | Which values to show: `both` (default), `lower`, `upper` or `none`. |
-| `position` | Where to show them. `right` (default): right of the slider, like Home Assistant's number slider, for example "18,0 - 22,0 °C". It gets the same space as the value of a number slider, so a longer text is cut off with "...". On very narrow cards it is left out. `below`: the lower value under the left end of the slider and the upper value under the right end, in full. |
-| `small` | `true`: shows the values in small text, right of the slider or below it. `false` by default. |
-| `push_handles` | `false` (default): a handle stops when it reaches the other handle. `true`: a handle pushes the other one along, and both entities change. |
+| `position` | Where to show the values: `right` (default) or `below`. See **Values** below. |
+| `small` | `true` shows the values in small text. `false` by default. |
+| `push` | `true` lets a handle push the other one along. `false` by default. See **Handles** below. |
 
 Example:
 
@@ -71,8 +71,31 @@ entity_max: input_number.heating_high
 name: Heating
 step: 0.5
 unit: °C
-position: below
 ```
+
+## Values
+
+With `position: right`, the values are shown right of the slider, like on Home Assistant's number slider, for example "18,0 - 22,0 °C". They get the same space as the value of a number slider, so a longer text is cut off with "...". On very narrow cards the values are left out, like on the number slider.
+
+With `position: below`, the lower value is shown under the left end of the slider and the upper value under the right end, in full. The slider then also uses the space where the values would be on the right.
+
+`small: true` makes the values smaller, in both places. `show` picks which of the two values you see.
+
+```yaml
+type: custom:entity-range-slider
+entity_min: input_number.heating_low
+entity_max: input_number.heating_high
+position: below
+small: true
+```
+
+Whatever the values say, the slider always starts at the same spot, so it lines up with the number sliders around it.
+
+## Handles
+
+By default a handle stops when it reaches the other handle, so the lower value stays at or below the upper value. With `push: true`, a handle pushes the other one along instead, and both entities change.
+
+When both handles sit on the same spot, drag in the direction you want: left moves the lower value, right moves the upper value. With the keyboard, select a handle with Tab and move it with the arrow keys.
 
 ## In an entities card
 

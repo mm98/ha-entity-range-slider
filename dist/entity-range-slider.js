@@ -42,7 +42,7 @@ const TEXTS = {
 		show: "Values to show",
 		position: "Where to show the values",
 		small: "Small text for the values",
-		push_handles: "Push the other handle",
+		push: "Push the other handle",
 		helper_entity_min: "The left handle changes this entity.",
 		helper_entity_max: "The right handle changes this entity.",
 		helper_min: "Leave empty to use the entity's own minimum.",
@@ -51,7 +51,7 @@ const TEXTS = {
 		helper_unit: "Leave empty to use the entity's own unit.",
 		helper_position: "Below puts each value under its end of the slider.",
 		helper_small: "Shows the values in smaller text.",
-		helper_push_handles: "When off, a handle stops at the other handle.",
+		helper_push: "When off, a handle stops at the other handle.",
 		both: "Both values (default)",
 		lower: "Lower value",
 		upper: "Upper value",
@@ -70,7 +70,7 @@ const TEXTS = {
 		show: "Viste værdier",
 		position: "Hvor værdierne vises",
 		small: "Lille tekst til værdierne",
-		push_handles: "Skub det andet håndtag",
+		push: "Skub det andet håndtag",
 		helper_entity_min: "Det venstre håndtag ændrer denne entitet.",
 		helper_entity_max: "Det højre håndtag ændrer denne entitet.",
 		helper_min: "Lad feltet stå tomt for at bruge entitetens eget minimum.",
@@ -79,7 +79,7 @@ const TEXTS = {
 		helper_unit: "Lad feltet stå tomt for at bruge entitetens egen enhed.",
 		helper_position: "Under viser hver værdi under sin ende af skyderen.",
 		helper_small: "Viser værdierne med mindre tekst.",
-		helper_push_handles: "Når den er slået fra, stopper et håndtag ved det andet.",
+		helper_push: "Når den er slået fra, stopper et håndtag ved det andet.",
 		both: "Begge værdier (standard)",
 		lower: "Nedre værdi",
 		upper: "Øvre værdi",
@@ -221,7 +221,7 @@ const checkConfig = (config) => {
 	if (given(config.position) && !VALUE_POSITIONS.includes(config.position)) {
 		throw new Error(`position must be one of: ${VALUE_POSITIONS.join(", ")}.`);
 	}
-	for (const key of ["push_handles", "small"]) {
+	for (const key of ["push", "small"]) {
 		if (given(config[key]) && typeof config[key] !== "boolean") {
 			throw new Error(`${key} must be true or false.`);
 		}
@@ -382,7 +382,7 @@ const findAccessor = (object, key) => {
 };
 
 // Home Assistant's slider pushes the other handle along when one handle
-// reaches it. Unless push_handles is on, the handle stops there instead, like
+// reaches it. Unless push is on, the handle stops there instead, like
 // the heat and cool handles of Home Assistant's thermostat card. When both
 // handles sit on the same spot, the drag direction picks the handle.
 const stopAtOtherHandle = (slider, row) => {
@@ -429,7 +429,7 @@ const stopAtOtherHandle = (slider, row) => {
 			},
 			set(value) {
 				const moving = this.activeThumb;
-				if (row._settingValues || row._config?.push_handles || !moving) {
+				if (row._settingValues || row._config?.push || !moving) {
 					set.call(this, value);
 					return;
 				}
@@ -725,7 +725,7 @@ class EntityRangeSliderCard extends HTMLElement {
 					},
 				},
 				{ name: "small", selector: { boolean: {} } },
-				{ name: "push_handles", selector: { boolean: {} } },
+				{ name: "push", selector: { boolean: {} } },
 			],
 			computeLabel: (schema) => text[schema.name],
 			computeHelper: (schema) => text[`helper_${schema.name}`],
