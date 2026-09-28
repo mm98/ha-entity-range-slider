@@ -7,7 +7,7 @@
  * built-in number slider and follows the theme.
  */
 
-const VERSION = "0.2.0";
+const VERSION = "0.2.1";
 const CARD_TAG = "entity-range-slider";
 const ROW_TAG = "entity-range-slider-row";
 const NUMBER_DOMAINS = ["input_number", "number"];
@@ -129,11 +129,18 @@ const ROW_STYLES = `
 	.state {
 		max-width: 45px;
 	}
-	/* Added: without a value on the right, the slider also takes those 45 px,
-	   so it starts where the slider of a number row starts. */
+	/* Added: without a value on the right, the slider also takes those 45 px
+	   and the margin before them, so it starts where the slider of a number
+	   row starts and ends where the values of the rows around it end. */
 	.full .slider {
-		min-width: calc(100px + 45px);
-		max-width: calc(200px + 45px);
+		min-width: calc(100px + 45px + var(--ha-space-2));
+		max-width: calc(200px + 45px + var(--ha-space-2));
+		margin-inline-end: 0;
+	}
+	/* Added: the handle at the highest value then reaches past the row into
+	   the card's padding, so the row must not cut it off. */
+	:host([full]) {
+		overflow: visible !important;
 	}
 	.state,
 	.below span {
@@ -903,6 +910,7 @@ class EntityRangeSliderRow extends HTMLElement {
 		const valueRight = !narrow && this._position() !== "below" && showValue(this._config.show) !== "none";
 		this._valueText.hidden = !valueRight;
 		this._flex.classList.toggle("full", !narrow && !valueRight);
+		this.toggleAttribute("full", !narrow && !valueRight);
 	}
 
 	async _changed() {
