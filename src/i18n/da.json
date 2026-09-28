@@ -1,0 +1,45 @@
+{
+	"card": {
+		"description": "En skyder med to håndtag, der sætter en nedre og en øvre entitet med tal, dato eller tid."
+	},
+	"label": {
+		"entity_min": "Entitet for den nedre værdi",
+		"entity_max": "Entitet for den øvre værdi",
+		"min": "Laveste værdi på skyderen",
+		"max": "Højeste værdi på skyderen",
+		"step": "Trin",
+		"show": "Viste værdier",
+		"position": "Hvor værdierne vises",
+		"full_width": "Skyder i fuld bredde",
+		"small": "Lille tekst til værdierne",
+		"push": "Skub det andet håndtag",
+		"slider": "Skyder"
+	},
+	"helper": {
+		"entity_min": "Håndtaget for den nedre værdi ændrer denne entitet.",
+		"entity_max": "Håndtaget for den øvre værdi ændrer denne entitet.",
+		"min": "Lad feltet stå tomt for standard. Tider som 06:00, datoer som 2026-10-01 eller +7d.",
+		"max": "Lad feltet stå tomt for standard. Tider som 22:00, datoer som 2026-12-31 eller +30d.",
+		"step": "Lad feltet stå tomt for standard. For tider i minutter, for datoer i dage.",
+		"unit": "Til tal. Lad feltet stå tomt for at bruge entitetens egen enhed.",
+		"position": "Som standard vises tal ved siden af skyderen, datoer og tider under den.",
+		"full_width": "Skyderen bruger også pladsen ved siden af. Værdier ved siden af skyderen flyttes ned under den.",
+		"small": "Viser værdierne med mindre tekst.",
+		"push": "Når den er slået fra, stopper et håndtag ved det andet."
+	},
+	"show": {
+		"both": "Begge værdier (standard)",
+		"lower": "Nedre værdi",
+		"upper": "Øvre værdi",
+		"none": "Ingen værdi"
+	},
+	"position": {
+		"inline": "Ved siden af skyderen",
+		"below": "Under skyderen"
+	},
+	"warning": {
+		"bad_range": "Den laveste værdi på skyderen skal være under den højeste værdi.",
+		"bad_limit": "Den laveste eller højeste værdi på skyderen er ikke en gyldig dato eller tid.",
+		"mixed_kinds": "Begge entiteter skal have samme slags værdi: tal, tider, datoer eller datoer med tid."
+	}
+}

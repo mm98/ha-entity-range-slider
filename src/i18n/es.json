@@ -1,0 +1,45 @@
+{
+	"card": {
+		"description": "Un control deslizante con dos controles que ajusta una entidad inferior y otra superior de número, fecha u hora."
+	},
+	"label": {
+		"entity_min": "Entidad para el valor inferior",
+		"entity_max": "Entidad para el valor superior",
+		"min": "Valor más bajo del control deslizante",
+		"max": "Valor más alto del control deslizante",
+		"step": "Tamaño del paso",
+		"show": "Valores a mostrar",
+		"position": "Posición de los valores",
+		"full_width": "Control deslizante de ancho completo",
+		"small": "Texto pequeño para los valores",
+		"push": "Empujar el otro control",
+		"slider": "Control deslizante"
+	},
+	"helper": {
+		"entity_min": "El control del valor inferior cambia esta entidad.",
+		"entity_max": "El control del valor superior cambia esta entidad.",
+		"min": "Déjalo vacío para usar el valor predeterminado. Horas como 06:00, fechas como 2026-10-01 o +7d.",
+		"max": "Déjalo vacío para usar el valor predeterminado. Horas como 22:00, fechas como 2026-12-31 o +30d.",
+		"step": "Déjalo vacío para usar el valor predeterminado. En minutos para las horas y en días para las fechas.",
+		"unit": "Para números. Déjalo vacío para usar la unidad de la entidad.",
+		"position": "Por defecto, los números se muestran junto al control deslizante y las fechas y horas, debajo.",
+		"full_width": "El control deslizante también usa el espacio de al lado. Los valores junto al control deslizante pasan debajo.",
+		"small": "Muestra los valores con un texto más pequeño.",
+		"push": "Si está desactivado, un control se detiene al llegar al otro."
+	},
+	"show": {
+		"both": "Ambos valores (predeterminado)",
+		"lower": "Valor inferior",
+		"upper": "Valor superior",
+		"none": "Ningún valor"
+	},
+	"position": {
+		"inline": "Junto al control deslizante",
+		"below": "Debajo del control deslizante"
+	},
+	"warning": {
+		"bad_range": "El valor más bajo del control deslizante debe ser menor que el valor más alto.",
+		"bad_limit": "El valor más bajo o más alto del control deslizante no es una fecha ni una hora válida.",
+		"mixed_kinds": "Ambas entidades deben tener el mismo tipo de valor: número, hora, fecha o fecha con hora."
+	}
+}

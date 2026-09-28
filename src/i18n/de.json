@@ -1,0 +1,45 @@
+{
+	"card": {
+		"description": "Ein Schieberegler mit zwei Reglern, der eine untere und eine obere Entität mit Zahl, Datum oder Uhrzeit setzt."
+	},
+	"label": {
+		"entity_min": "Entität für den unteren Wert",
+		"entity_max": "Entität für den oberen Wert",
+		"min": "Niedrigster Wert auf dem Schieberegler",
+		"max": "Höchster Wert auf dem Schieberegler",
+		"step": "Schrittweite",
+		"show": "Angezeigte Werte",
+		"position": "Position der Werte",
+		"full_width": "Schieberegler in voller Breite",
+		"small": "Kleine Schrift für die Werte",
+		"push": "Anderen Regler mitschieben",
+		"slider": "Schieberegler"
+	},
+	"helper": {
+		"entity_min": "Der Regler für den unteren Wert ändert diese Entität.",
+		"entity_max": "Der Regler für den oberen Wert ändert diese Entität.",
+		"min": "Leer lassen für den Standardwert. Uhrzeiten wie 06:00, Datumsangaben wie 2026-10-01 oder +7d.",
+		"max": "Leer lassen für den Standardwert. Uhrzeiten wie 22:00, Datumsangaben wie 2026-12-31 oder +30d.",
+		"step": "Leer lassen für den Standardwert. Bei Uhrzeiten in Minuten, bei Datumsangaben in Tagen.",
+		"unit": "Für Zahlen. Leer lassen, um die Einheit der Entität zu verwenden.",
+		"position": "Standardmäßig stehen Zahlen neben dem Schieberegler, Datum und Uhrzeit darunter.",
+		"full_width": "Der Schieberegler nutzt auch den Platz daneben. Werte neben dem Schieberegler werden darunter verschoben.",
+		"small": "Zeigt die Werte in kleinerer Schrift.",
+		"push": "Wenn ausgeschaltet, stoppt ein Regler am anderen Regler."
+	},
+	"show": {
+		"both": "Beide Werte (Standard)",
+		"lower": "Unterer Wert",
+		"upper": "Oberer Wert",
+		"none": "Kein Wert"
+	},
+	"position": {
+		"inline": "Neben dem Schieberegler",
+		"below": "Unter dem Schieberegler"
+	},
+	"warning": {
+		"bad_range": "Der niedrigste Wert auf dem Schieberegler muss unter dem höchsten Wert liegen.",
+		"bad_limit": "Der niedrigste oder höchste Wert auf dem Schieberegler ist weder ein gültiges Datum noch eine gültige Uhrzeit.",
+		"mixed_kinds": "Beide Entitäten müssen dieselbe Art von Wert haben: Zahl, Uhrzeit, Datum oder Datum mit Uhrzeit."
+	}
+}
