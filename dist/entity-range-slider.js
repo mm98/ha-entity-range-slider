@@ -39,9 +39,9 @@ const TEXTS = {
 		max: "Highest value on the slider",
 		step: "Step",
 		unit: "Unit",
-		show_value: "Values to show",
-		value_position: "Where to show the values",
-		small_values: "Small text for the values",
+		show: "Values to show",
+		position: "Where to show the values",
+		small: "Small text for the values",
 		push_handles: "Push the other handle",
 		helper_entity_min: "The left handle changes this entity.",
 		helper_entity_max: "The right handle changes this entity.",
@@ -49,8 +49,8 @@ const TEXTS = {
 		helper_max: "Leave empty to use the entity's own maximum.",
 		helper_step: "Leave empty to use the entity's own step.",
 		helper_unit: "Leave empty to use the entity's own unit.",
-		helper_value_position: "Below puts each value under its end of the slider.",
-		helper_small_values: "Shows the values in smaller text.",
+		helper_position: "Below puts each value under its end of the slider.",
+		helper_small: "Shows the values in smaller text.",
 		helper_push_handles: "When off, a handle stops at the other handle.",
 		both: "Both values (default)",
 		lower: "Lower value",
@@ -67,9 +67,9 @@ const TEXTS = {
 		max: "Højeste værdi på skyderen",
 		step: "Trin",
 		unit: "Enhed",
-		show_value: "Viste værdier",
-		value_position: "Hvor værdierne vises",
-		small_values: "Lille tekst til værdierne",
+		show: "Viste værdier",
+		position: "Hvor værdierne vises",
+		small: "Lille tekst til værdierne",
 		push_handles: "Skub det andet håndtag",
 		helper_entity_min: "Det venstre håndtag ændrer denne entitet.",
 		helper_entity_max: "Det højre håndtag ændrer denne entitet.",
@@ -77,8 +77,8 @@ const TEXTS = {
 		helper_max: "Lad feltet stå tomt for at bruge entitetens eget maksimum.",
 		helper_step: "Lad feltet stå tomt for at bruge entitetens eget trin.",
 		helper_unit: "Lad feltet stå tomt for at bruge entitetens egen enhed.",
-		helper_value_position: "Under viser hver værdi under sin ende af skyderen.",
-		helper_small_values: "Viser værdierne med mindre tekst.",
+		helper_position: "Under viser hver værdi under sin ende af skyderen.",
+		helper_small: "Viser værdierne med mindre tekst.",
 		helper_push_handles: "Når den er slået fra, stopper et håndtag ved det andet.",
 		both: "Begge værdier (standard)",
 		lower: "Nedre værdi",
@@ -215,13 +215,13 @@ const checkConfig = (config) => {
 	if (given(config.step) && Number(config.step) <= 0) {
 		throw new Error("step must be above 0.");
 	}
-	if (typeof config.show_value !== "boolean" && given(config.show_value) && !SHOW_VALUE.includes(config.show_value)) {
-		throw new Error(`show_value must be one of: ${SHOW_VALUE.join(", ")}.`);
+	if (typeof config.show !== "boolean" && given(config.show) && !SHOW_VALUE.includes(config.show)) {
+		throw new Error(`show must be one of: ${SHOW_VALUE.join(", ")}.`);
 	}
-	if (given(config.value_position) && !VALUE_POSITIONS.includes(config.value_position)) {
-		throw new Error(`value_position must be one of: ${VALUE_POSITIONS.join(", ")}.`);
+	if (given(config.position) && !VALUE_POSITIONS.includes(config.position)) {
+		throw new Error(`position must be one of: ${VALUE_POSITIONS.join(", ")}.`);
 	}
-	for (const key of ["push_handles", "small_values"]) {
+	for (const key of ["push_handles", "small"]) {
 		if (given(config[key]) && typeof config[key] !== "boolean") {
 			throw new Error(`${key} must be true or false.`);
 		}
@@ -597,9 +597,9 @@ class EntityRangeSliderRow extends HTMLElement {
 			entity: config.entity_min,
 			name: config.name || commonName(hass, lower, upper),
 		};
-		const show = showValue(config.show_value);
-		const below = config.value_position === "below";
-		const small = config.small_values === true;
+		const show = showValue(config.show);
+		const below = config.position === "below";
+		const small = config.small === true;
 		setText(this._valueText, below ? "" : this._valueString(lower, upper, range), small);
 		setText(this._lowerText, below && ["both", "lower"].includes(show) ? this._oneValue(lower, range) : "", small);
 		setText(this._upperText, below && ["both", "upper"].includes(show) ? this._oneValue(upper, range) : "", small);
@@ -620,7 +620,7 @@ class EntityRangeSliderRow extends HTMLElement {
 			lower: [lower],
 			upper: [upper],
 			none: [],
-		}[showValue(this._config.show_value)];
+		}[showValue(this._config.show)];
 		if (!shown.length) {
 			return "";
 		}
@@ -648,7 +648,7 @@ class EntityRangeSliderRow extends HTMLElement {
 		}
 		const narrow = this.clientWidth <= 300;
 		const valueRight =
-			!narrow && this._config.value_position !== "below" && showValue(this._config.show_value) !== "none";
+			!narrow && this._config.position !== "below" && showValue(this._config.show) !== "none";
 		this._valueText.hidden = !valueRight;
 		this._flex.classList.toggle("full", !narrow && !valueRight);
 	}
@@ -707,7 +707,7 @@ class EntityRangeSliderCard extends HTMLElement {
 					],
 				},
 				{
-					name: "show_value",
+					name: "show",
 					selector: {
 						select: {
 							mode: "dropdown",
@@ -716,7 +716,7 @@ class EntityRangeSliderCard extends HTMLElement {
 					},
 				},
 				{
-					name: "value_position",
+					name: "position",
 					selector: {
 						select: {
 							mode: "dropdown",
@@ -724,7 +724,7 @@ class EntityRangeSliderCard extends HTMLElement {
 						},
 					},
 				},
-				{ name: "small_values", selector: { boolean: {} } },
+				{ name: "small", selector: { boolean: {} } },
 				{ name: "push_handles", selector: { boolean: {} } },
 			],
 			computeLabel: (schema) => text[schema.name],

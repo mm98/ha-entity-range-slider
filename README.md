@@ -57,9 +57,9 @@ When you pick one entity of a pair in the card picker, for example `input_number
 | `max` | Highest value on the slider. By default the maximum of `entity_max`. |
 | `step` | How much a value changes per step. By default the step of `entity_min`. |
 | `unit` | Unit shown after the values. By default the unit of the entities. |
-| `show_value` | Which values to show: `both` (default), `lower`, `upper` or `none`. |
-| `value_position` | Where to show them. `right` (default): right of the slider, like Home Assistant's number slider, for example "18,0 - 22,0 °C". It gets the same space as the value of a number slider, so a longer text is cut off with "...". On very narrow cards it is left out. `below`: the lower value under the left end of the slider and the upper value under the right end, in full. |
-| `small_values` | `true`: shows the values in small text, right of the slider or below it. `false` by default. |
+| `show` | Which values to show: `both` (default), `lower`, `upper` or `none`. |
+| `position` | Where to show them. `right` (default): right of the slider, like Home Assistant's number slider, for example "18,0 - 22,0 °C". It gets the same space as the value of a number slider, so a longer text is cut off with "...". On very narrow cards it is left out. `below`: the lower value under the left end of the slider and the upper value under the right end, in full. |
+| `small` | `true`: shows the values in small text, right of the slider or below it. `false` by default. |
 | `push_handles` | `false` (default): a handle stops when it reaches the other handle. `true`: a handle pushes the other one along, and both entities change. |
 
 Example:
@@ -71,7 +71,7 @@ entity_max: input_number.heating_high
 name: Heating
 step: 0.5
 unit: °C
-value_position: below
+position: below
 ```
 
 ## In an entities card
