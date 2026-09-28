@@ -36,8 +36,8 @@ Or add it yourself:
 
 Two entities that hold the same kind of value: one for the lower value and one for the upper value.
 
-- Numbers: Number helpers (`input_number`) or `number` entities.
-- Times, dates or dates with times: Date and/or time helpers (`input_datetime`), or `time`, `date` and `datetime` entities.
+- Numbers: [Number helpers](https://www.home-assistant.io/integrations/input_number/) (`input_number`) or `number` entities.
+- Times, dates or dates with times: [Date and/or time helpers](https://www.home-assistant.io/integrations/input_datetime/) (`input_datetime`), or `time`, `date` and `datetime` entities.
 
 The easiest is two helpers. Go to **Settings > Devices & services > Helpers**, select **Create helper** and pick **Number** or **Date and/or time**. Make one for the lower value and one for the upper value, for example "Heating low" and "Heating high", with the same settings.
 
@@ -93,7 +93,7 @@ small: true
 
 ### In an entities card
 
-As a row among other rows. Its icon, name and slider line up with Home Assistant's number rows around it.
+As a row among other rows in Home Assistant's [entities card](https://www.home-assistant.io/dashboards/entities/). Its icon, name and slider line up with the number rows around it.
 
 ![An entities card with a number slider for the fan speed and a range slider from 30 to 70 below it](images/entities-card.png)
 
