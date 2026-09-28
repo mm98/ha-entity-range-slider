@@ -47,6 +47,20 @@ Edit a dashboard, select **Add card** and pick **Entity range slider**. Choose t
 
 When you pick one entity of a pair in the card picker, for example `input_number.heating_low`, and its partner exists (`input_number.heating_high`), the card is suggested with both filled in.
 
+The card's editor has a field for every setting, so YAML is optional:
+
+![The card editor with the heating entities, the name Heating and the values below the slider](images/editor.png)
+
+The same card in YAML:
+
+```yaml
+type: custom:entity-range-slider
+entity_min: input_number.heating_low
+entity_max: input_number.heating_high
+name: Heating
+position: below
+```
+
 ## Examples
 
 ### Values right of the slider
@@ -93,7 +107,7 @@ small: true
 
 ### In an entities card
 
-As a row among other rows in Home Assistant's [entities card](https://www.home-assistant.io/dashboards/entities/). Its icon, name and slider line up with the number rows around it.
+As a row among other rows in Home Assistant's [entities card](https://www.home-assistant.io/dashboards/entities/). Its icon, name and slider line up with the number rows around it. Add the row in YAML once. After that, its edit button in the entities card editor opens the same editor as the card.
 
 ![An entities card with a number slider for the fan speed and a range slider from 30 to 70 below it](images/entities-card.png)
 

@@ -7,9 +7,10 @@
  * built-in number slider and follows the theme.
  */
 
-const VERSION = "0.2.1";
+const VERSION = "0.3.0";
 const CARD_TAG = "entity-range-slider";
 const ROW_TAG = "entity-range-slider-row";
+const EDITOR_TAG = "entity-range-slider-editor";
 const NUMBER_DOMAINS = ["input_number", "number"];
 const DOMAINS = [...NUMBER_DOMAINS, "input_datetime", "time", "date", "datetime"];
 const NO_VALUE_STATES = ["unavailable", "unknown"];
@@ -674,8 +675,98 @@ const stopAtOtherHandle = (slider, row) => {
 	}
 };
 
+// The fields of the visual editor, for the card and the row.
+const configForm = () => {
+	const text = texts();
+	const rangeEntity = { entity: { filter: { domain: DOMAINS } } };
+	return {
+		schema: [
+			{ name: "entity_min", required: true, selector: rangeEntity },
+			{ name: "entity_max", required: true, selector: rangeEntity },
+			{ name: "name", selector: { entity_name: {} }, context: { entity: "entity_min" } },
+			{ name: "icon", selector: { icon: {} }, context: { icon_entity: "entity_min" } },
+			{
+				name: "",
+				type: "grid",
+				schema: [
+					{ name: "min", selector: { text: {} } },
+					{ name: "max", selector: { text: {} } },
+					{ name: "step", selector: { number: { mode: "box", step: "any", min: 0 } } },
+					{ name: "unit", selector: { text: {} } },
+				],
+			},
+			{
+				name: "show",
+				selector: {
+					select: {
+						mode: "dropdown",
+						options: SHOW_VALUE.map((value) => ({ value, label: text[value] })),
+					},
+				},
+			},
+			{
+				name: "position",
+				selector: {
+					select: {
+						mode: "dropdown",
+						options: VALUE_POSITIONS.map((value) => ({ value, label: text[value] })),
+					},
+				},
+			},
+			{ name: "small", selector: { boolean: {} } },
+			{ name: "push", selector: { boolean: {} } },
+		],
+		computeLabel: (schema) => text[schema.name],
+		computeHelper: (schema) => text[`helper_${schema.name}`],
+	};
+};
+
+// Home Assistant shows the form above for cards (getConfigForm), but rows in
+// an entities card need an editor element of their own. This one shows the
+// same form with Home Assistant's ha-form, like its form editor for cards.
+class EntityRangeSliderEditor extends HTMLElement {
+	setConfig(config) {
+		this._config = config;
+		this._render();
+	}
+
+	set hass(hass) {
+		this._hass = hass;
+		this._render();
+	}
+
+	_render() {
+		if (!this._config || !this._hass) {
+			return;
+		}
+		if (!this._form) {
+			const form = configForm();
+			this._form = document.createElement("ha-form");
+			this._form.schema = form.schema;
+			// Like Home Assistant's form editor: its own translated labels for
+			// generic fields like name and icon.
+			this._form.computeLabel = (schema) =>
+				form.computeLabel(schema) || this._hass.localize(`ui.panel.lovelace.editor.card.generic.${schema.name}`);
+			this._form.computeHelper = form.computeHelper;
+			this._form.addEventListener("value-changed", (event) => {
+				event.stopPropagation();
+				this.dispatchEvent(
+					new CustomEvent("config-changed", { detail: { config: event.detail.value }, bubbles: true, composed: true }),
+				);
+			});
+			this.append(this._form);
+		}
+		this._form.hass = this._hass;
+		this._form.data = this._config;
+	}
+}
+
 class EntityRangeSliderRow extends HTMLElement {
 	_shown = {};
+
+	static getConfigElement() {
+		return document.createElement(EDITOR_TAG);
+	}
 
 	setConfig(config) {
 		checkConfig(config);
@@ -950,48 +1041,7 @@ class EntityRangeSliderRow extends HTMLElement {
 
 class EntityRangeSliderCard extends HTMLElement {
 	static getConfigForm() {
-		const text = texts();
-		const rangeEntity = { entity: { filter: { domain: DOMAINS } } };
-		return {
-			schema: [
-				{ name: "entity_min", required: true, selector: rangeEntity },
-				{ name: "entity_max", required: true, selector: rangeEntity },
-				{ name: "name", selector: { entity_name: {} }, context: { entity: "entity_min" } },
-				{ name: "icon", selector: { icon: {} }, context: { icon_entity: "entity_min" } },
-				{
-					name: "",
-					type: "grid",
-					schema: [
-						{ name: "min", selector: { text: {} } },
-						{ name: "max", selector: { text: {} } },
-						{ name: "step", selector: { number: { mode: "box", step: "any", min: 0 } } },
-						{ name: "unit", selector: { text: {} } },
-					],
-				},
-				{
-					name: "show",
-					selector: {
-						select: {
-							mode: "dropdown",
-							options: SHOW_VALUE.map((value) => ({ value, label: text[value] })),
-						},
-					},
-				},
-				{
-					name: "position",
-					selector: {
-						select: {
-							mode: "dropdown",
-							options: VALUE_POSITIONS.map((value) => ({ value, label: text[value] })),
-						},
-					},
-				},
-				{ name: "small", selector: { boolean: {} } },
-				{ name: "push", selector: { boolean: {} } },
-			],
-			computeLabel: (schema) => text[schema.name],
-			computeHelper: (schema) => text[`helper_${schema.name}`],
-		};
+		return configForm();
 	}
 
 	static getStubConfig(hass) {
@@ -1037,6 +1087,9 @@ class EntityRangeSliderCard extends HTMLElement {
 
 if (!customElements.get(ROW_TAG)) {
 	customElements.define(ROW_TAG, EntityRangeSliderRow);
+}
+if (!customElements.get(EDITOR_TAG)) {
+	customElements.define(EDITOR_TAG, EntityRangeSliderEditor);
 }
 if (!customElements.get(CARD_TAG)) {
 	customElements.define(CARD_TAG, EntityRangeSliderCard);
