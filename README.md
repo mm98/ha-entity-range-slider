@@ -4,7 +4,7 @@ A dashboard card with one slider and two handles. The left handle sets one entit
 
 It works with numbers, times, dates and dates with times. It looks and works like Home Assistant's own number slider and follows your theme. The lower value can never go above the upper value.
 
-![A range slider for the heating, with 19.0 °C and 22.5 °C below the slider](images/values-below.png)
+<img src="https://raw.githubusercontent.com/mm98/ha-entity-range-slider/main/images/values-below.png" alt="A range slider for the heating, with 19.0 °C and 22.5 °C below the slider" width="50%">
 
 The card editor is available in English and Danish.
 
@@ -53,7 +53,7 @@ When you pick one entity of a pair in the card picker, for example `input_number
 
 The default for numbers, like Home Assistant's number slider. The values get the same space as the value of a number slider, so a longer text is cut off with "...". Use `position: below` for longer values.
 
-![Fan speed from 30 to 70, with the values right of the slider](images/values-right.png)
+<img src="https://raw.githubusercontent.com/mm98/ha-entity-range-slider/main/images/values-right.png" alt="Fan speed from 30 to 70, with the values right of the slider" width="50%">
 
 ```yaml
 type: custom:entity-range-slider
@@ -66,7 +66,7 @@ name: Fan speed
 
 The lower value under the left end of the slider, the upper value under the right end, in full.
 
-![Heating from 19.0 °C to 22.5 °C, with the values below the slider](images/values-below.png)
+<img src="https://raw.githubusercontent.com/mm98/ha-entity-range-slider/main/images/values-below.png" alt="Heating from 19.0 °C to 22.5 °C, with the values below the slider" width="50%">
 
 ```yaml
 type: custom:entity-range-slider
@@ -80,7 +80,7 @@ position: below
 
 `small: true` shows the values in small text, below the slider or right of it.
 
-![Heating from 19.0 °C to 22.5 °C, with small values below the slider](images/values-small.png)
+<img src="https://raw.githubusercontent.com/mm98/ha-entity-range-slider/main/images/values-small.png" alt="Heating from 19.0 °C to 22.5 °C, with small values below the slider" width="50%">
 
 ```yaml
 type: custom:entity-range-slider
@@ -95,7 +95,7 @@ small: true
 
 As a row among other rows. Its icon, name and slider line up with Home Assistant's number rows around it.
 
-![An entities card with a number slider for the fan speed and a range slider from 30 to 70 below it](images/entities-card.png)
+<img src="https://raw.githubusercontent.com/mm98/ha-entity-range-slider/main/images/entities-card.png" alt="An entities card with a number slider for the fan speed and a range slider from 30 to 70 below it" width="50%">
 
 ```yaml
 type: entities
@@ -111,7 +111,7 @@ entities:
 
 The slider runs from 00:00 to 23:59 in steps of 15 minutes, unless you set `min`, `max` and `step`. Times are shown below the slider by default.
 
-![Heating hours from 6:30 AM to 10:00 PM](images/times.png)
+<img src="https://raw.githubusercontent.com/mm98/ha-entity-range-slider/main/images/times.png" alt="Heating hours from 6:30 AM to 10:00 PM" width="50%">
 
 ```yaml
 type: custom:entity-range-slider
@@ -124,7 +124,7 @@ name: Heating hours
 
 The slider runs from today to 30 days from today in steps of one day, unless you set `min`, `max` and `step`.
 
-![A vacation from Oct 5 to Oct 12](images/dates.png)
+<img src="https://raw.githubusercontent.com/mm98/ha-entity-range-slider/main/images/dates.png" alt="A vacation from Oct 5 to Oct 12" width="50%">
 
 ```yaml
 type: custom:entity-range-slider
@@ -138,7 +138,7 @@ max: "+60d"
 
 The slider runs from today to 30 days from today in steps of one hour, unless you set `min`, `max` and `step`.
 
-![Car charging from Sep 29, 10:00 PM to Sep 30, 6:00 AM](images/date-times.png)
+<img src="https://raw.githubusercontent.com/mm98/ha-entity-range-slider/main/images/date-times.png" alt="Car charging from Sep 29, 10:00 PM to Sep 30, 6:00 AM" width="50%">
 
 ```yaml
 type: custom:entity-range-slider
