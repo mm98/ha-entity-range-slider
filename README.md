@@ -1,12 +1,12 @@
 # Entity Range Slider for Home Assistant
 
-A dashboard card with one slider and two handles. The left handle sets one entity, the right handle sets another, so together they set a range: the temperature band a room should stay in, the hours the heating runs, the dates of a vacation or the window for charging the car.
+A dashboard card with one slider and two handles. One handle sets the entity with the lower value, the other the entity with the upper value, so together they set a range: the temperature band a room should stay in, the hours the heating runs, the dates of a vacation or the window for charging the car.
 
 It works with numbers, times, dates and dates with times. It looks and works like Home Assistant's own number slider and follows your theme. The lower value can never go above the upper value.
 
 ![A range slider for the heating, with 19.0 °C and 22.5 °C below the slider](images/values-below.png)
 
-The card editor is available in English and Danish.
+The card editor is available in English, Danish, German and Spanish.
 
 ## Install
 
@@ -47,7 +47,7 @@ Edit a dashboard, select **Add card** and pick **Entity range slider**. Choose t
 
 When you pick one entity of a pair in the card picker, for example `input_number.heating_low`, and its partner exists (`input_number.heating_high`), the card is suggested with both filled in.
 
-The card's editor has a field for every setting, so YAML is optional:
+The card's editor has a field for every setting, so YAML is optional. Like the editors of Home Assistant's own cards, it starts with the entities, followed by sections for the content, the slider and what a tap on the icon or name does:
 
 ![The card editor with the heating entities, the name Heating and the values below the slider](images/editor.png)
 
@@ -63,11 +63,11 @@ position: below
 
 ## Examples
 
-### Values right of the slider
+### Values next to the slider
 
 The default for numbers, like Home Assistant's number slider. The values get the same space as the value of a number slider, so a longer text is cut off with "...". Use `position: below` for longer values.
 
-![Fan speed from 30 to 70, with the values right of the slider](images/values-right.png)
+![Fan speed from 30 to 70, with the values next to the slider](images/values-inline.png)
 
 ```yaml
 type: custom:entity-range-slider
@@ -78,7 +78,7 @@ name: Fan speed
 
 ### Values below the slider
 
-The lower value under the left end of the slider, the upper value under the right end. They get more room than on the right. The slider keeps the size of Home Assistant's number slider.
+The lower value under the start of the slider, the upper value under the end. They get more room than next to the slider. The slider keeps the size of Home Assistant's number slider.
 
 ![Heating from 19.0 °C to 22.5 °C, with the values below the slider](images/values-below.png)
 
@@ -92,7 +92,7 @@ position: below
 
 ### Small values
 
-`small: true` shows the values in small text, below the slider or right of it.
+`small: true` shows the values in small text, below the slider or next to it.
 
 ![Heating from 19.0 °C to 22.5 °C, with small values below the slider](images/values-small.png)
 
@@ -107,7 +107,7 @@ small: true
 
 ### Full width slider
 
-`full_width: true` lets the slider also use the space on the right, where a number slider shows its value, so the slider reaches the right edge of the row. Values on the right move below the slider. With `show: none` there are no values at all.
+`full_width: true` lets the slider also use the space next to it, where a number slider shows its value, so the slider reaches the end of the row. Values next to the slider move below it. With `show: none` there are no values at all.
 
 ![Heating from 19.0 °C to 22.5 °C, with a longer slider and the values below it](images/full-width.png)
 
@@ -183,19 +183,22 @@ small: true
 
 | Setting | What it does |
 |---|---|
-| `entity_min` | The entity the left handle sets. Required. |
-| `entity_max` | The entity the right handle sets. Required. |
+| `entity_min` | The entity the handle for the lower value sets. Required. |
+| `entity_max` | The entity the handle for the upper value sets. Required. |
 | `name` | Name shown next to the icon. By default the words both entity names share, for example "Heating" for "Heating low" and "Heating high". |
 | `icon` | Icon at the start of the row. By default the icon of `entity_min`. |
+| `color` | Color of the icon, like in Home Assistant's entities card. |
+| `secondary_info` | A second line under the name, for example when `entity_min` last changed, like in Home Assistant's [entities card](https://www.home-assistant.io/dashboards/entities/). |
 | `min` | Lowest value on the slider. See **Limits and steps** below. |
 | `max` | Highest value on the slider. See **Limits and steps** below. |
 | `step` | How much a value changes per step. See **Limits and steps** below. |
 | `unit` | For numbers: the unit shown after the values. By default the unit of the entities. |
 | `show` | Which values to show: `both` (default), `lower`, `upper` or `none`. |
-| `position` | Where to show the values: `right` or `below`. By default `right` for numbers and `below` for times and dates, which are too long for the space on the right. With `full_width: true` the values are always below. On very narrow cards the values on the right are left out, like on the number slider. |
-| `full_width` | `true` lets the slider also use the space on the right, so it reaches the right edge of the row. Values on the right then move below the slider. `false` by default: the slider has the size of Home Assistant's number slider, also when the values are below or hidden. |
+| `position` | Where to show the values: `inline` (next to the slider) or `below`. By default `inline` for numbers and `below` for times and dates, which are too long for the space next to the slider. With `full_width: true` the values are always below. On very narrow cards the values next to the slider are left out, like on the number slider. |
+| `full_width` | `true` lets the slider also use the space next to it, so it reaches the end of the row. Values next to the slider then move below it. `false` by default: the slider has the size of Home Assistant's number slider, also when the values are below or hidden. |
 | `small` | `true` shows the values in small text. `false` by default. |
 | `push` | `true` lets a handle push the other one along. `false` by default. See **Handles** below. |
+| `tap_action`, `hold_action`, `double_tap_action` | What a tap, a long press or a double tap on the icon or name does. By default a tap or long press opens the details of `entity_min`. See Home Assistant's [actions](https://www.home-assistant.io/dashboards/actions/). |
 
 ## Limits and steps
 
@@ -212,8 +215,10 @@ Times and dates are shown the way Home Assistant shows them, following the langu
 
 By default a handle stops when it reaches the other handle, so the lower value stays at or below the upper value. With `push: true`, a handle pushes the other one along instead, and both entities change.
 
-When both handles sit on the same spot, drag in the direction you want: left moves the lower value, right moves the upper value. With the keyboard, select a handle with Tab and move it with the arrow keys.
+When both handles sit on the same spot, drag in the direction you want: towards the start of the slider moves the lower value, towards the end moves the upper value. With the keyboard, select a handle with Tab and move it with the arrow keys.
 
 ## Good to know
 
 The card keeps the lower value at or below the upper value for changes made with the card. Changes made elsewhere, for example in an automation or in the entity's own dialog, are not checked by the card.
+
+To build the card yourself or add a language, see [CONTRIBUTING.md](CONTRIBUTING.md).

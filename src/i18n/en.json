@@ -1,0 +1,45 @@
+{
+	"card": {
+		"description": "A slider with two handles that sets a lower and an upper number, date, or time entity."
+	},
+	"label": {
+		"entity_min": "Entity for the lower value",
+		"entity_max": "Entity for the upper value",
+		"min": "Lowest value on the slider",
+		"max": "Highest value on the slider",
+		"step": "Step",
+		"show": "Values to show",
+		"position": "Where to show the values",
+		"full_width": "Full width slider",
+		"small": "Small text for the values",
+		"push": "Push the other handle",
+		"slider": "Slider"
+	},
+	"helper": {
+		"entity_min": "The handle for the lower value sets this entity.",
+		"entity_max": "The handle for the upper value sets this entity.",
+		"min": "Leave empty for the default. Times like 06:00, dates like 2026-10-01 or +7d.",
+		"max": "Leave empty for the default. Times like 22:00, dates like 2026-12-31 or +30d.",
+		"step": "Leave empty for the default. For times in minutes, for dates in days.",
+		"unit": "For numbers. Leave empty to use the entity's own unit.",
+		"position": "By default numbers show next to the slider, dates and times below it.",
+		"full_width": "The slider also uses the space next to it. Values next to the slider move below it.",
+		"small": "Shows the values in smaller text.",
+		"push": "When off, a handle stops at the other handle."
+	},
+	"show": {
+		"both": "Both values (default)",
+		"lower": "Lower value",
+		"upper": "Upper value",
+		"none": "No value"
+	},
+	"position": {
+		"inline": "Next to the slider",
+		"below": "Below the slider"
+	},
+	"warning": {
+		"bad_range": "The lowest value on the slider must be below the highest value.",
+		"bad_limit": "The lowest or highest value on the slider is not a valid date or time.",
+		"mixed_kinds": "Both entities must hold the same kind of value: numbers, times, dates, or dates with times."
+	}
+}

@@ -1,0 +1,21 @@
+{
+	"name": "ha-entity-range-slider",
+	"version": "0.5.0",
+	"description": "A Home Assistant dashboard card with one slider and two handles that set a lower and an upper entity.",
+	"homepage": "https://github.com/mm98/ha-entity-range-slider",
+	"license": "MIT",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "node build.mjs",
+		"watch": "node build.mjs --watch",
+		"check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"lit": "3.3.3"
+	},
+	"devDependencies": {
+		"esbuild": "0.28.2",
+		"typescript": "7.0.2"
+	}
+}
