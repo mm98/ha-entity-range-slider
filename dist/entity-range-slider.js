@@ -2,17 +2,21 @@
  * Entity range slider for Home Assistant dashboards.
  *
  * One slider with two handles. The left handle sets entity_min, the right
- * handle sets entity_max. It uses Home Assistant's own slider and entity row,
- * so it looks like the built-in number slider and follows the theme.
+ * handle sets entity_max. Both hold numbers, times, dates or dates with times.
+ * It uses Home Assistant's own slider and entity row, so it looks like the
+ * built-in number slider and follows the theme.
  */
 
-const VERSION = "0.1.0";
+const VERSION = "0.2.0";
 const CARD_TAG = "entity-range-slider";
 const ROW_TAG = "entity-range-slider-row";
-const DOMAINS = ["input_number", "number"];
+const NUMBER_DOMAINS = ["input_number", "number"];
+const DOMAINS = [...NUMBER_DOMAINS, "input_datetime", "time", "date", "datetime"];
 const NO_VALUE_STATES = ["unavailable", "unknown"];
 const SHOW_VALUE = ["both", "lower", "upper", "none"];
 const VALUE_POSITIONS = ["right", "below"];
+const MINUTE = 60000;
+const DAY = 86400000;
 
 // Words that mark the lower and the upper entity of a pair in entity IDs,
 // used to suggest the card in the card picker.
@@ -45,20 +49,22 @@ const TEXTS = {
 		push: "Push the other handle",
 		helper_entity_min: "The left handle changes this entity.",
 		helper_entity_max: "The right handle changes this entity.",
-		helper_min: "Leave empty to use the entity's own minimum.",
-		helper_max: "Leave empty to use the entity's own maximum.",
-		helper_step: "Leave empty to use the entity's own step.",
-		helper_unit: "Leave empty to use the entity's own unit.",
-		helper_position: "Below puts each value under its end of the slider.",
+		helper_min: "Leave empty for the default. Times like 06:00, dates like 2026-10-01 or +7d.",
+		helper_max: "Leave empty for the default. Times like 22:00, dates like 2026-12-31 or +30d.",
+		helper_step: "Leave empty for the default. For times in minutes, for dates in days.",
+		helper_unit: "For numbers. Leave empty to use the entity's own unit.",
+		helper_position: "By default numbers show right, dates and times below.",
 		helper_small: "Shows the values in smaller text.",
 		helper_push: "When off, a handle stops at the other handle.",
 		both: "Both values (default)",
 		lower: "Lower value",
 		upper: "Upper value",
 		none: "No value",
-		right: "Right of the slider (default)",
+		right: "Right of the slider",
 		below: "Below the slider",
 		bad_range: "The lowest value on the slider must be below the highest value.",
+		bad_limit: "The lowest or highest value on the slider is not a valid date or time.",
+		mixed_kinds: "Both entities must hold the same kind of value: numbers, times, dates or dates with times.",
 	},
 	da: {
 		entity_min: "Entitet for den nedre værdi",
@@ -73,20 +79,22 @@ const TEXTS = {
 		push: "Skub det andet håndtag",
 		helper_entity_min: "Det venstre håndtag ændrer denne entitet.",
 		helper_entity_max: "Det højre håndtag ændrer denne entitet.",
-		helper_min: "Lad feltet stå tomt for at bruge entitetens eget minimum.",
-		helper_max: "Lad feltet stå tomt for at bruge entitetens eget maksimum.",
-		helper_step: "Lad feltet stå tomt for at bruge entitetens eget trin.",
-		helper_unit: "Lad feltet stå tomt for at bruge entitetens egen enhed.",
-		helper_position: "Under viser hver værdi under sin ende af skyderen.",
+		helper_min: "Lad feltet stå tomt for standard. Tider som 06:00, datoer som 2026-10-01 eller +7d.",
+		helper_max: "Lad feltet stå tomt for standard. Tider som 22:00, datoer som 2026-12-31 eller +30d.",
+		helper_step: "Lad feltet stå tomt for standard. For tider i minutter, for datoer i dage.",
+		helper_unit: "Til tal. Lad feltet stå tomt for at bruge entitetens egen enhed.",
+		helper_position: "Som standard vises tal til højre, datoer og tider under.",
 		helper_small: "Viser værdierne med mindre tekst.",
 		helper_push: "Når den er slået fra, stopper et håndtag ved det andet.",
 		both: "Begge værdier (standard)",
 		lower: "Nedre værdi",
 		upper: "Øvre værdi",
 		none: "Ingen værdi",
-		right: "Til højre for skyderen (standard)",
+		right: "Til højre for skyderen",
 		below: "Under skyderen",
 		bad_range: "Den laveste værdi på skyderen skal være under den højeste værdi.",
+		bad_limit: "Den laveste eller højeste værdi på skyderen er ikke en gyldig dato eller tid.",
+		mixed_kinds: "Begge entiteter skal have samme slags værdi: tal, tider, datoer eller datoer med tid.",
 	},
 };
 
@@ -182,6 +190,8 @@ const given = (value) => value !== undefined && value !== null && value !== "";
 
 const decimalsOf = (number) => (String(number).split(".")[1] ?? "").length;
 
+const domainOf = (entityId) => String(entityId).split(".")[0];
+
 const showValue = (setting) => {
 	if (setting === false) {
 		return "none";
@@ -199,21 +209,28 @@ const checkConfig = (config) => {
 	if (config.entity_min === config.entity_max) {
 		throw new Error("entity_min and entity_max must be two different entities.");
 	}
-	for (const key of ["entity_min", "entity_max"]) {
-		if (!DOMAINS.includes(String(config[key]).split(".")[0])) {
-			throw new Error(`${key} must be an input_number or number entity.`);
+	const domains = [domainOf(config.entity_min), domainOf(config.entity_max)];
+	for (const [index, key] of ["entity_min", "entity_max"].entries()) {
+		if (!DOMAINS.includes(domains[index])) {
+			throw new Error(`${key} must be one of these entity types: ${DOMAINS.join(", ")}.`);
 		}
 	}
-	for (const key of ["min", "max", "step"]) {
-		if (given(config[key]) && !Number.isFinite(Number(config[key]))) {
-			throw new Error(`${key} must be a number.`);
+	const numbers = domains.map((domain) => NUMBER_DOMAINS.includes(domain));
+	if (numbers[0] !== numbers[1]) {
+		throw new Error("entity_min and entity_max must both be numbers, or both dates or times.");
+	}
+	if (numbers[0]) {
+		for (const key of ["min", "max"]) {
+			if (given(config[key]) && !Number.isFinite(Number(config[key]))) {
+				throw new Error(`${key} must be a number.`);
+			}
+		}
+		if (given(config.min) && given(config.max) && Number(config.min) >= Number(config.max)) {
+			throw new Error("min must be below max.");
 		}
 	}
-	if (given(config.min) && given(config.max) && Number(config.min) >= Number(config.max)) {
-		throw new Error("min must be below max.");
-	}
-	if (given(config.step) && Number(config.step) <= 0) {
-		throw new Error("step must be above 0.");
+	if (given(config.step) && !(Number(config.step) > 0)) {
+		throw new Error("step must be a number above 0.");
 	}
 	if (typeof config.show !== "boolean" && given(config.show) && !SHOW_VALUE.includes(config.show)) {
 		throw new Error(`show must be one of: ${SHOW_VALUE.join(", ")}.`);
@@ -254,15 +271,209 @@ const findPair = (hass, entityId) => {
 	return null;
 };
 
-// Outer limits, step and unit: from the card settings, else from the entities.
-const rangeOf = (config, lower, upper) => ({
-	min: Number(given(config.min) ? config.min : lower.attributes.min ?? 0),
-	max: Number(given(config.max) ? config.max : upper.attributes.max ?? 100),
-	step: Number(given(config.step) ? config.step : lower.attributes.step ?? upper.attributes.step ?? 1),
-	unit: given(config.unit)
-		? String(config.unit)
-		: lower.attributes.unit_of_measurement || upper.attributes.unit_of_measurement || "",
-});
+// The kind of value an entity holds: number, time, date or datetime (a date
+// with a time).
+const kindOf = (stateObj) => {
+	const domain = domainOf(stateObj.entity_id);
+	if (NUMBER_DOMAINS.includes(domain)) {
+		return "number";
+	}
+	if (domain === "input_datetime") {
+		const { has_date: hasDate, has_time: hasTime } = stateObj.attributes;
+		if (hasDate && hasTime) {
+			return "datetime";
+		}
+		return hasDate ? "date" : "time";
+	}
+	return domain;
+};
+
+/*
+ * Times and dates on the slider.
+ *
+ * The slider only knows numbers, so a time is its minute of the day, a date
+ * its day number and a date with a time its minute number. Clock times are
+ * kept as milliseconds whose UTC digits are the wall clock digits, so no time
+ * zone can shift them. Like Home Assistant, input_datetime values are wall
+ * clock values as they are, and datetime entities (moments in time) are shown
+ * in the time zone the user profile picks.
+ */
+
+// Like Home Assistant: the browser's time zone when the user profile asks
+// for it, else the server's.
+const timeZoneOf = (hass) =>
+	(hass.locale?.time_zone === "local" && Intl.DateTimeFormat().resolvedOptions().timeZone) || hass.config.time_zone;
+
+// The wall clock time of a moment in a time zone.
+const wallClock = (utcMs, timeZone) => {
+	const parts = Object.fromEntries(
+		new Intl.DateTimeFormat("en-US", {
+			timeZone,
+			hourCycle: "h23",
+			year: "numeric",
+			month: "numeric",
+			day: "numeric",
+			hour: "numeric",
+			minute: "numeric",
+			second: "numeric",
+		})
+			.formatToParts(new Date(utcMs))
+			.map((part) => [part.type, Number(part.value)]),
+	);
+	return Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second);
+};
+
+// The moment a wall clock time happens in a time zone.
+const fromWallClock = (wallMs, timeZone) => {
+	let utcMs = wallMs;
+	for (let round = 0; round < 2; round++) {
+		utcMs = wallMs - (wallClock(utcMs, timeZone) - utcMs);
+	}
+	return utcMs;
+};
+
+const todayStart = (hass) => {
+	const now = wallClock(Date.now(), timeZoneOf(hass));
+	return now - (now % DAY);
+};
+
+// "2026-10-01", "2026-10-01 18:30:00" or "2026-10-01T18:30:00.000Z" as a
+// wall clock time.
+const parseWallClock = (text) => {
+	const match = String(text).match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+	if (!match) {
+		return NaN;
+	}
+	const [year, month, day, hour, minute, second] = match.slice(1).map((part) => Number(part ?? 0));
+	return Date.UTC(year, month - 1, day, hour, minute, second);
+};
+
+// "18:30" or "18:30:00" as the minute of the day.
+const parseTime = (text) => {
+	const match = String(text)
+		.trim()
+		.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+	return match ? Number(match[1]) * 60 + Number(match[2]) : NaN;
+};
+
+const isoDate = (wallMs) => new Date(wallMs).toISOString().slice(0, 10);
+const isoTime = (wallMs) => new Date(wallMs).toISOString().slice(11, 19);
+
+// A limit from the card settings. Dates can also be relative to today:
+// today, +30d or -7d.
+const parseLimit = (kind, setting, hass) => {
+	if (kind === "time") {
+		return parseTime(setting);
+	}
+	const text = setting instanceof Date ? setting.toISOString() : String(setting).trim();
+	const days = text === "today" ? 0 : text.match(/^([+-]\d+)d$/)?.[1];
+	const wallMs = days === undefined ? parseWallClock(text) : todayStart(hass) + Number(days) * DAY;
+	return kind === "date" ? Math.floor(wallMs / DAY) : Math.round(wallMs / MINUTE);
+};
+
+// The value of an entity on the slider.
+const valueOf = (kind, stateObj, hass) => {
+	switch (kind) {
+		case "number":
+			return Number(stateObj.state);
+		case "time":
+			return parseTime(stateObj.state);
+		case "date":
+			return parseWallClock(stateObj.state) / DAY;
+		default:
+			return domainOf(stateObj.entity_id) === "datetime"
+				? Math.round(wallClock(Date.parse(stateObj.state), timeZoneOf(hass)) / MINUTE)
+				: Math.round(parseWallClock(stateObj.state) / MINUTE);
+	}
+};
+
+// Saves a slider value with the entity's own action.
+const saveValue = (hass, kind, entityId, value) => {
+	const domain = domainOf(entityId);
+	const target = { entity_id: entityId };
+	if (kind === "number") {
+		return hass.callService(domain, "set_value", { value }, target);
+	}
+	if (kind === "time") {
+		const time = isoTime(value * MINUTE);
+		return domain === "input_datetime"
+			? hass.callService(domain, "set_datetime", { time }, target)
+			: hass.callService(domain, "set_value", { time }, target);
+	}
+	if (kind === "date") {
+		const date = isoDate(value * DAY);
+		return domain === "input_datetime"
+			? hass.callService(domain, "set_datetime", { date }, target)
+			: hass.callService(domain, "set_value", { date }, target);
+	}
+	const wallMs = value * MINUTE;
+	return domain === "input_datetime"
+		? hass.callService(domain, "set_datetime", { datetime: `${isoDate(wallMs)} ${isoTime(wallMs)}` }, target)
+		: hass.callService(domain, "set_value", { datetime: new Date(fromWallClock(wallMs, timeZoneOf(hass))).toISOString() }, target);
+};
+
+// Home Assistant's rule for 12-hour clocks (use_am_pm.ts).
+const useAmPm = (locale) => {
+	if (locale?.time_format === "12" || locale?.time_format === "24") {
+		return locale.time_format === "12";
+	}
+	const language = locale?.time_format === "system" ? undefined : locale?.language;
+	return new Date("January 1, 2023 22:00:00").toLocaleString(language).includes("10");
+};
+
+// Formats a time or date the way Home Assistant's short formats do
+// (formatTime, formatDateVeryShort and formatShortDateTime, with the year
+// only when it is not this year).
+const formatClock = (kind, value, hass) => {
+	const locale = hass.locale;
+	const amPm = useAmPm(locale);
+	if (kind === "time") {
+		return new Intl.DateTimeFormat(locale?.language, {
+			hour: "numeric",
+			minute: "2-digit",
+			hourCycle: amPm ? "h12" : "h23",
+			timeZone: "UTC",
+		}).format(new Date(value * MINUTE));
+	}
+	const wallMs = value * (kind === "date" ? DAY : MINUTE);
+	const thisYear = new Date(todayStart(hass)).getUTCFullYear() === new Date(wallMs).getUTCFullYear();
+	return new Intl.DateTimeFormat(locale?.language, {
+		...(thisYear ? {} : { year: "numeric" }),
+		month: "short",
+		day: "numeric",
+		...(kind === "datetime"
+			? { hour: amPm ? "numeric" : "2-digit", minute: "2-digit", hourCycle: amPm ? "h12" : "h23" }
+			: {}),
+		timeZone: "UTC",
+	}).format(new Date(wallMs));
+};
+
+// Outer limits, step and unit: from the card settings, else from the entities
+// (numbers) or defaults (times: the whole day, dates: today and 30 days on).
+const rangeOf = (config, lower, upper, kind, hass) => {
+	if (kind === "number") {
+		return {
+			min: Number(given(config.min) ? config.min : lower.attributes.min ?? 0),
+			max: Number(given(config.max) ? config.max : upper.attributes.max ?? 100),
+			step: Number(given(config.step) ? config.step : lower.attributes.step ?? upper.attributes.step ?? 1),
+			unit: given(config.unit)
+				? String(config.unit)
+				: lower.attributes.unit_of_measurement || upper.attributes.unit_of_measurement || "",
+		};
+	}
+	const today = todayStart(hass);
+	const [min, max, step] = {
+		time: [0, 24 * 60 - 1, 15],
+		date: [today / DAY, today / DAY + 30, 1],
+		datetime: [today / MINUTE, (today + 30 * DAY) / MINUTE, 60],
+	}[kind];
+	return {
+		min: given(config.min) ? parseLimit(kind, config.min, hass) : min,
+		max: given(config.max) ? parseLimit(kind, config.max, hass) : max,
+		step: given(config.step) ? Number(config.step) : step,
+		unit: "",
+	};
+};
 
 // Same locale choice as Home Assistant's own number formatting.
 const numberLocale = (locale) => {
@@ -494,6 +705,7 @@ class EntityRangeSliderRow extends HTMLElement {
 		this._row.catchInteraction = false;
 		this._slider = document.createElement("ha-slider");
 		this._slider.range = true;
+		this._numberFormatter = this._slider.valueFormatter;
 		stopAtOtherHandle(this._slider, this);
 		this._slider.addEventListener("change", () => this._changed());
 		// Updates from Home Assistant must not move a handle while it is dragged.
@@ -547,18 +759,32 @@ class EntityRangeSliderRow extends HTMLElement {
 		}
 		const lower = hass.states[config.entity_min];
 		const upper = hass.states[config.entity_max];
-		// Like Home Assistant's own rows: only redraw when one of the two
-		// entities, the settings or the language changed.
-		const shown = this._shown;
-		if (
-			shown.config === config &&
-			shown.lower === lower &&
-			shown.upper === upper &&
-			shown.locale === hass.locale
-		) {
+		// Like Home Assistant's own rows (has-changed.ts): only redraw when the
+		// settings, one of the two entities or the way things are shown changed.
+		// The formatters arrive a moment after the first hass object.
+		const old = this._shown.hass;
+		const changed =
+			this._shown.config !== config ||
+			!old ||
+			[
+				"connected",
+				"themes",
+				"locale",
+				"localize",
+				"formatEntityState",
+				"formatEntityAttributeName",
+				"formatEntityAttributeValue",
+				"formatEntityName",
+			].some((key) => old[key] !== hass[key]) ||
+			old.config?.state !== hass.config?.state ||
+			[config.entity_min, config.entity_max].some(
+				(entityId) => old.states[entityId] !== hass.states[entityId] || old.entities?.[entityId] !== hass.entities?.[entityId],
+			);
+		if (!changed) {
 			return;
 		}
-		this._shown = { config, lower, upper, locale: hass.locale };
+		this._shown = { config, hass };
+		const text = texts(hass.locale?.language ?? hass.language);
 
 		const missing = [config.entity_min, config.entity_max].find((entityId) => !hass.states[entityId]);
 		if (missing) {
@@ -569,25 +795,39 @@ class EntityRangeSliderRow extends HTMLElement {
 			);
 			return;
 		}
-		const range = rangeOf(config, lower, upper);
+		const kind = kindOf(lower);
+		if (kindOf(upper) !== kind) {
+			this._showWarning(text.mixed_kinds);
+			return;
+		}
+		const range = rangeOf(config, lower, upper, kind, hass);
+		if (!Number.isFinite(range.min) || !Number.isFinite(range.max)) {
+			this._showWarning(text.bad_limit);
+			return;
+		}
 		if (!(range.min < range.max)) {
-			this._showWarning(texts(hass.locale?.language ?? hass.language).bad_range);
+			this._showWarning(text.bad_range);
 			return;
 		}
 		this._warning.hidden = true;
 		this._row.hidden = false;
+		this._kind = kind;
 		this._range = range;
 
-		const noValue = [lower, upper].some((stateObj) => NO_VALUE_STATES.includes(stateObj.state));
+		const values = [valueOf(kind, lower, hass), valueOf(kind, upper, hass)];
+		const noValue =
+			[lower, upper].some((stateObj) => NO_VALUE_STATES.includes(stateObj.state)) ||
+			!values.every(Number.isFinite);
 		const slider = this._slider;
 		slider.min = range.min;
 		slider.max = range.max;
 		slider.step = range.step;
 		slider.disabled = noValue;
+		slider.valueFormatter =
+			kind === "number" ? this._numberFormatter : (value) => formatClock(kind, value, this._hass);
 		if (!noValue) {
 			this._settingValues = true;
-			slider.minValue = Number(lower.state);
-			slider.maxValue = Number(upper.state);
+			[slider.minValue, slider.maxValue] = values;
 			this._settingValues = false;
 		}
 
@@ -598,13 +838,19 @@ class EntityRangeSliderRow extends HTMLElement {
 			name: config.name || commonName(hass, lower, upper),
 		};
 		const show = showValue(config.show);
-		const below = config.position === "below";
+		const below = this._position() === "below";
 		const small = config.small === true;
 		setText(this._valueText, below ? "" : this._valueString(lower, upper, range), small);
 		setText(this._lowerText, below && ["both", "lower"].includes(show) ? this._oneValue(lower, range) : "", small);
 		setText(this._upperText, below && ["both", "upper"].includes(show) ? this._oneValue(upper, range) : "", small);
 		this._below.hidden = !below || show === "none";
 		this._fitValue();
+	}
+
+	// Numbers show their values right of the slider by default, like Home
+	// Assistant's number slider. Dates and times are too long for that space.
+	_position() {
+		return this._config.position || (this._kind === "number" || !this._kind ? "right" : "below");
 	}
 
 	_showWarning(text) {
@@ -629,15 +875,22 @@ class EntityRangeSliderRow extends HTMLElement {
 		if (noValue) {
 			return hass.formatEntityState(noValue);
 		}
+		if (this._kind !== "number") {
+			return shown.map((stateObj) => this._oneValue(stateObj, range)).join(" - ");
+		}
 		const numbers = shown.map((stateObj) => formatValue(hass, stateObj, range.step)).join(" - ");
 		return withUnit(numbers, range.unit, hass.locale);
 	}
 
 	_oneValue(stateObj, range) {
 		const hass = this._hass;
-		return NO_VALUE_STATES.includes(stateObj.state)
-			? hass.formatEntityState(stateObj)
-			: withUnit(formatValue(hass, stateObj, range.step), range.unit, hass.locale);
+		if (NO_VALUE_STATES.includes(stateObj.state)) {
+			return hass.formatEntityState(stateObj);
+		}
+		if (this._kind !== "number") {
+			return formatClock(this._kind, valueOf(this._kind, stateObj, hass), hass);
+		}
+		return withUnit(formatValue(hass, stateObj, range.step), range.unit, hass.locale);
 	}
 
 	// Like Home Assistant's number row: no value text right of the slider on
@@ -647,8 +900,7 @@ class EntityRangeSliderRow extends HTMLElement {
 			return;
 		}
 		const narrow = this.clientWidth <= 300;
-		const valueRight =
-			!narrow && this._config.position !== "below" && showValue(this._config.show) !== "none";
+		const valueRight = !narrow && this._position() !== "below" && showValue(this._config.show) !== "none";
 		this._valueText.hidden = !valueRight;
 		this._flex.classList.toggle("full", !narrow && !valueRight);
 	}
@@ -656,10 +908,12 @@ class EntityRangeSliderRow extends HTMLElement {
 	async _changed() {
 		const hass = this._hass;
 		const config = this._config;
+		const kind = this._kind;
 		const decimals = Math.max(decimalsOf(this._range.step), decimalsOf(this._range.min));
-		const round = (value) => Number(Number(value).toFixed(decimals));
-		const lowerNow = Number(hass.states[config.entity_min]?.state);
-		const upperNow = Number(hass.states[config.entity_max]?.state);
+		const round =
+			kind === "number" ? (value) => Number(Number(value).toFixed(decimals)) : (value) => Math.round(value);
+		const lowerNow = valueOf(kind, hass.states[config.entity_min], hass);
+		const upperNow = valueOf(kind, hass.states[config.entity_max], hass);
 		const lower = round(this._slider.minValue);
 		const upper = round(this._slider.maxValue);
 		const writes = [];
@@ -676,7 +930,7 @@ class EntityRangeSliderRow extends HTMLElement {
 		}
 		try {
 			for (const [entityId, value] of writes) {
-				await hass.callService(entityId.split(".")[0], "set_value", { value }, { entity_id: entityId });
+				await saveValue(hass, kind, entityId, value);
 			}
 		} catch (err) {
 			// Home Assistant has already shown the error. Put the handles back.
@@ -689,19 +943,19 @@ class EntityRangeSliderRow extends HTMLElement {
 class EntityRangeSliderCard extends HTMLElement {
 	static getConfigForm() {
 		const text = texts();
-		const numberEntity = { entity: { filter: { domain: DOMAINS } } };
+		const rangeEntity = { entity: { filter: { domain: DOMAINS } } };
 		return {
 			schema: [
-				{ name: "entity_min", required: true, selector: numberEntity },
-				{ name: "entity_max", required: true, selector: numberEntity },
+				{ name: "entity_min", required: true, selector: rangeEntity },
+				{ name: "entity_max", required: true, selector: rangeEntity },
 				{ name: "name", selector: { entity_name: {} }, context: { entity: "entity_min" } },
 				{ name: "icon", selector: { icon: {} }, context: { icon_entity: "entity_min" } },
 				{
 					name: "",
 					type: "grid",
 					schema: [
-						{ name: "min", selector: { number: { mode: "box", step: "any" } } },
-						{ name: "max", selector: { number: { mode: "box", step: "any" } } },
+						{ name: "min", selector: { text: {} } },
+						{ name: "max", selector: { text: {} } },
 						{ name: "step", selector: { number: { mode: "box", step: "any", min: 0 } } },
 						{ name: "unit", selector: { text: {} } },
 					],
@@ -733,13 +987,14 @@ class EntityRangeSliderCard extends HTMLElement {
 	}
 
 	static getStubConfig(hass) {
-		const numbers = Object.keys(hass.states).filter((entityId) => DOMAINS.includes(entityId.split(".")[0]));
-		for (const entityId of numbers) {
+		const candidates = Object.keys(hass.states).filter((entityId) => DOMAINS.includes(domainOf(entityId)));
+		for (const entityId of candidates) {
 			const pair = findPair(hass, entityId);
 			if (pair) {
 				return pair;
 			}
 		}
+		const numbers = candidates.filter((entityId) => NUMBER_DOMAINS.includes(domainOf(entityId)));
 		return { entity_min: numbers[0] ?? "", entity_max: numbers[1] ?? "" };
 	}
 
@@ -784,7 +1039,7 @@ if (!window.customCards.some((card) => card.type === CARD_TAG)) {
 	window.customCards.push({
 		type: CARD_TAG,
 		name: "Entity range slider",
-		description: "A slider with two handles that sets a lower and an upper number entity.",
+		description: "A slider with two handles that sets a lower and an upper number, date or time entity.",
 		preview: true,
 		documentationURL: "https://github.com/mm98/ha-entity-range-slider",
 		getEntitySuggestion: (hass, entityId) => {
