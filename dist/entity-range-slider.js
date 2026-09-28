@@ -7,7 +7,7 @@
  * built-in number slider and follows the theme.
  */
 
-const VERSION = "0.3.0";
+const VERSION = "0.4.0";
 const CARD_TAG = "entity-range-slider";
 const ROW_TAG = "entity-range-slider-row";
 const EDITOR_TAG = "entity-range-slider-editor";
@@ -46,6 +46,7 @@ const TEXTS = {
 		unit: "Unit",
 		show: "Values to show",
 		position: "Where to show the values",
+		full_width: "Full width slider",
 		small: "Small text for the values",
 		push: "Push the other handle",
 		helper_entity_min: "The left handle changes this entity.",
@@ -55,6 +56,7 @@ const TEXTS = {
 		helper_step: "Leave empty for the default. For times in minutes, for dates in days.",
 		helper_unit: "For numbers. Leave empty to use the entity's own unit.",
 		helper_position: "By default numbers show right, dates and times below.",
+		helper_full_width: "The slider also uses the space on the right. Values on the right move below the slider.",
 		helper_small: "Shows the values in smaller text.",
 		helper_push: "When off, a handle stops at the other handle.",
 		both: "Both values (default)",
@@ -76,6 +78,7 @@ const TEXTS = {
 		unit: "Enhed",
 		show: "Viste værdier",
 		position: "Hvor værdierne vises",
+		full_width: "Skyder i fuld bredde",
 		small: "Lille tekst til værdierne",
 		push: "Skub det andet håndtag",
 		helper_entity_min: "Det venstre håndtag ændrer denne entitet.",
@@ -85,6 +88,7 @@ const TEXTS = {
 		helper_step: "Lad feltet stå tomt for standard. For tider i minutter, for datoer i dage.",
 		helper_unit: "Til tal. Lad feltet stå tomt for at bruge entitetens egen enhed.",
 		helper_position: "Som standard vises tal til højre, datoer og tider under.",
+		helper_full_width: "Skyderen bruger også pladsen til højre. Værdier til højre flyttes ned under skyderen.",
 		helper_small: "Viser værdierne med mindre tekst.",
 		helper_push: "Når den er slået fra, stopper et håndtag ved det andet.",
 		both: "Begge værdier (standard)",
@@ -130,9 +134,9 @@ const ROW_STYLES = `
 	.state {
 		max-width: 45px;
 	}
-	/* Added: without a value on the right, the slider also takes those 45 px
-	   and the margin before them, so it starts where the slider of a number
-	   row starts and ends where the values of the rows around it end. */
+	/* Added: with full_width, the slider also takes those 45 px and the
+	   margin before them, so it starts where the slider of a number row
+	   starts and ends where the values of the rows around it end. */
 	.full .slider {
 		min-width: calc(100px + 45px + var(--ha-space-2));
 		max-width: calc(200px + 45px + var(--ha-space-2));
@@ -246,7 +250,7 @@ const checkConfig = (config) => {
 	if (given(config.position) && !VALUE_POSITIONS.includes(config.position)) {
 		throw new Error(`position must be one of: ${VALUE_POSITIONS.join(", ")}.`);
 	}
-	for (const key of ["push", "small"]) {
+	for (const key of ["full_width", "push", "small"]) {
 		if (given(config[key]) && typeof config[key] !== "boolean") {
 			throw new Error(`${key} must be true or false.`);
 		}
@@ -713,6 +717,7 @@ const configForm = () => {
 					},
 				},
 			},
+			{ name: "full_width", selector: { boolean: {} } },
 			{ name: "small", selector: { boolean: {} } },
 			{ name: "push", selector: { boolean: {} } },
 		],
@@ -948,6 +953,10 @@ class EntityRangeSliderRow extends HTMLElement {
 	// Numbers show their values right of the slider by default, like Home
 	// Assistant's number slider. Dates and times are too long for that space.
 	_position() {
+		// A full width slider leaves no room on the right.
+		if (this._config.full_width === true) {
+			return "below";
+		}
 		return this._config.position || (this._kind === "number" || !this._kind ? "right" : "below");
 	}
 
@@ -992,16 +1001,18 @@ class EntityRangeSliderRow extends HTMLElement {
 	}
 
 	// Like Home Assistant's number row: no value text right of the slider on
-	// very narrow rows.
+	// very narrow rows. Otherwise the space for the value keeps its 45 px, also
+	// when it is empty, so the slider has the size of Home Assistant's number
+	// slider. Only full_width gives that space to the slider.
 	_fitValue() {
 		if (!this._valueText || !this._config) {
 			return;
 		}
 		const narrow = this.clientWidth <= 300;
-		const valueRight = !narrow && this._position() !== "below" && showValue(this._config.show) !== "none";
-		this._valueText.hidden = !valueRight;
-		this._flex.classList.toggle("full", !narrow && !valueRight);
-		this.toggleAttribute("full", !narrow && !valueRight);
+		const full = !narrow && this._config.full_width === true;
+		this._valueText.hidden = narrow || full;
+		this._flex.classList.toggle("full", full);
+		this.toggleAttribute("full", full);
 	}
 
 	async _changed() {
