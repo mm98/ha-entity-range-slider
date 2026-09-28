@@ -78,7 +78,7 @@ name: Fan speed
 
 ### Values below the slider
 
-The lower value under the left end of the slider, the upper value under the right end, in full.
+The lower value under the left end of the slider, the upper value under the right end. They get more room than on the right. The slider keeps the size of Home Assistant's number slider.
 
 ![Heating from 19.0 °C to 22.5 °C, with the values below the slider](images/values-below.png)
 
@@ -103,6 +103,20 @@ entity_max: input_number.heating_high
 name: Heating
 position: below
 small: true
+```
+
+### Full width slider
+
+`full_width: true` lets the slider also use the space on the right, where a number slider shows its value, so the slider reaches the right edge of the row. Values on the right move below the slider. With `show: none` there are no values at all.
+
+![Heating from 19.0 °C to 22.5 °C, with a longer slider and the values below it](images/full-width.png)
+
+```yaml
+type: custom:entity-range-slider
+entity_min: input_number.heating_low
+entity_max: input_number.heating_high
+name: Heating
+full_width: true
 ```
 
 ### In an entities card
@@ -150,7 +164,7 @@ max: "+60d"
 
 ### Dates with times
 
-The slider runs from today to 30 days from today in steps of one hour, unless you set `min`, `max` and `step`.
+The slider runs from today to 30 days from today in steps of one hour, unless you set `min`, `max` and `step`. A date with a time is long, so `full_width: true` and `small: true` give the values more room.
 
 ![Car charging from Sep 29, 10:00 PM to Sep 30, 6:00 AM](images/date-times.png)
 
@@ -161,6 +175,7 @@ entity_max: input_datetime.charging_end
 name: Car charging
 max: "+3d"
 step: 30
+full_width: true
 small: true
 ```
 
@@ -177,7 +192,8 @@ small: true
 | `step` | How much a value changes per step. See **Limits and steps** below. |
 | `unit` | For numbers: the unit shown after the values. By default the unit of the entities. |
 | `show` | Which values to show: `both` (default), `lower`, `upper` or `none`. |
-| `position` | Where to show the values: `right` or `below`. By default `right` for numbers and `below` for times and dates, which are too long for the space on the right. On very narrow cards the values on the right are left out, like on the number slider. |
+| `position` | Where to show the values: `right` or `below`. By default `right` for numbers and `below` for times and dates, which are too long for the space on the right. With `full_width: true` the values are always below. On very narrow cards the values on the right are left out, like on the number slider. |
+| `full_width` | `true` lets the slider also use the space on the right, so it reaches the right edge of the row. Values on the right then move below the slider. `false` by default: the slider has the size of Home Assistant's number slider, also when the values are below or hidden. |
 | `small` | `true` shows the values in small text. `false` by default. |
 | `push` | `true` lets a handle push the other one along. `false` by default. See **Handles** below. |
 
