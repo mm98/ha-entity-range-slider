@@ -121,6 +121,12 @@ const ROW_STYLES = `
 	.state {
 		max-width: 45px;
 	}
+	/* Added: without a value on the right, the slider also takes those 45 px,
+	   so it starts where the slider of a number row starts. */
+	.full .slider {
+		min-width: calc(100px + 45px);
+		max-width: calc(200px + 45px);
+	}
 	.state,
 	.below span {
 		overflow: hidden;
@@ -515,10 +521,10 @@ class EntityRangeSliderRow extends HTMLElement {
 		sliderBox.append(this._slider, this._below);
 		this._valueText = document.createElement("span");
 		this._valueText.className = "state";
-		const flex = document.createElement("div");
-		flex.className = "flex";
-		flex.append(sliderBox, this._valueText);
-		this._row.append(flex);
+		this._flex = document.createElement("div");
+		this._flex.className = "flex";
+		this._flex.append(sliderBox, this._valueText);
+		this._row.append(this._flex);
 		this.attachShadow({ mode: "open" }).append(style, this._warning, this._row);
 
 		this._built = true;
@@ -640,10 +646,11 @@ class EntityRangeSliderRow extends HTMLElement {
 		if (!this._valueText || !this._config) {
 			return;
 		}
-		this._valueText.hidden =
-			this.clientWidth <= 300 ||
-			this._config.value_position === "below" ||
-			showValue(this._config.show_value) === "none";
+		const narrow = this.clientWidth <= 300;
+		const valueRight =
+			!narrow && this._config.value_position !== "below" && showValue(this._config.show_value) !== "none";
+		this._valueText.hidden = !valueRight;
+		this._flex.classList.toggle("full", !narrow && !valueRight);
 	}
 
 	async _changed() {
