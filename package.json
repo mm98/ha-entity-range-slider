@@ -9,13 +9,19 @@
 	"scripts": {
 		"build": "node build.mjs",
 		"watch": "node build.mjs --watch",
-		"check": "tsc --noEmit"
+		"check": "tsc --noEmit && tsc --noEmit -p test",
+		"test": "vitest run --config test/vitest.config.ts",
+		"test:e2e": "playwright test --config test/e2e/playwright.config.ts"
 	},
 	"dependencies": {
 		"lit": "3.3.3"
 	},
 	"devDependencies": {
+		"@home-assistant/webawesome": "3.7.0-ha.1",
+		"@playwright/test": "1.63.0",
+		"@types/node": "24.19.0",
 		"esbuild": "0.28.2",
-		"typescript": "7.0.2"
+		"typescript": "7.0.2",
+		"vitest": "5.0.2"
 	}
 }
