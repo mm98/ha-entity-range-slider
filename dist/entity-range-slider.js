@@ -1231,69 +1231,7 @@
   var translate = (key, language) => find(TRANSLATIONS[language.split("-")[0]], key) ?? find(en_default, key) ?? key;
   var languageOf = (hass) => hass?.locale.language ?? hass?.language ?? document.documentElement.lang;
 
-  // src/validators.ts
-  var BOOLEAN_KEYS = ["full_width", "push", "small"];
-  function validateEditorConfig(config) {
-    if (!config || typeof config !== "object") {
-      throw new Error("The settings must be a map.");
-    }
-    const values = config;
-    for (const key of ["entity_low", "entity_high", "icon", "unit"]) {
-      if (isSet(values[key]) && typeof values[key] !== "string") {
-        throw new Error(`${key} must be text.`);
-      }
-    }
-    for (const key of ["min", "max", "step"]) {
-      if (isSet(values[key]) && !["string", "number"].includes(typeof values[key])) {
-        throw new Error(`${key} must be a number, a date or a time.`);
-      }
-    }
-    if (isSet(values.show) && !SHOW_OPTIONS.includes(values.show)) {
-      throw new Error(`show must be one of: ${SHOW_OPTIONS.join(", ")}.`);
-    }
-    if (isSet(values.position) && !POSITIONS.includes(values.position)) {
-      throw new Error(`position must be one of: ${POSITIONS.join(", ")}.`);
-    }
-    for (const key of BOOLEAN_KEYS) {
-      if (isSet(values[key]) && typeof values[key] !== "boolean") {
-        throw new Error(`${key} must be true or false.`);
-      }
-    }
-  }
-  function validateConfig(config) {
-    validateEditorConfig(config);
-    const { entity_low, entity_high } = config;
-    if (!entity_low || !entity_high) {
-      throw new Error("Set both entity_low and entity_high.");
-    }
-    if (entity_low === entity_high) {
-      throw new Error("entity_low and entity_high must be two different entities.");
-    }
-    for (const [key, entityId] of [
-      ["entity_low", entity_low],
-      ["entity_high", entity_high]
-    ]) {
-      if (!kindsOfEntity(entityId).length) {
-        throw new Error(`${key} must be one of these entity types: ${DOMAINS.join(", ")}.`);
-      }
-    }
-    const upperKinds = kindsOfEntity(entity_high);
-    const kinds = kindsOfEntity(entity_low).filter((kind) => upperKinds.includes(kind));
-    if (!kinds.length) {
-      throw new Error(
-        "entity_low and entity_high must hold the same kind of value: numbers, times, dates, or dates with times."
-      );
-    }
-    if (isSet(config.step) && !(Number(config.step) > 0)) {
-      throw new Error("step must be a number above 0.");
-    }
-    if (kinds.length === 1) {
-      kinds[0].validateConfig?.(config);
-    }
-  }
-
-  // src/entity-range-slider-editor.ts
-  var EDITOR_TAG = "entity-range-slider-editor";
+  // src/editor-schema.ts
   var selectSelector = (options, group, language) => ({
     select: {
       mode: "dropdown",
@@ -1365,6 +1303,70 @@
       }
     ];
   };
+
+  // src/validators.ts
+  var BOOLEAN_KEYS = ["full_width", "push", "small"];
+  function validateEditorConfig(config) {
+    if (!config || typeof config !== "object") {
+      throw new Error("The settings must be a map.");
+    }
+    const values = config;
+    for (const key of ["entity_low", "entity_high", "icon", "unit"]) {
+      if (isSet(values[key]) && typeof values[key] !== "string") {
+        throw new Error(`${key} must be text.`);
+      }
+    }
+    for (const key of ["min", "max", "step"]) {
+      if (isSet(values[key]) && !["string", "number"].includes(typeof values[key])) {
+        throw new Error(`${key} must be a number, a date or a time.`);
+      }
+    }
+    if (isSet(values.show) && !SHOW_OPTIONS.includes(values.show)) {
+      throw new Error(`show must be one of: ${SHOW_OPTIONS.join(", ")}.`);
+    }
+    if (isSet(values.position) && !POSITIONS.includes(values.position)) {
+      throw new Error(`position must be one of: ${POSITIONS.join(", ")}.`);
+    }
+    for (const key of BOOLEAN_KEYS) {
+      if (isSet(values[key]) && typeof values[key] !== "boolean") {
+        throw new Error(`${key} must be true or false.`);
+      }
+    }
+  }
+  function validateConfig(config) {
+    validateEditorConfig(config);
+    const { entity_low, entity_high } = config;
+    if (!entity_low || !entity_high) {
+      throw new Error("Set both entity_low and entity_high.");
+    }
+    if (entity_low === entity_high) {
+      throw new Error("entity_low and entity_high must be two different entities.");
+    }
+    for (const [key, entityId] of [
+      ["entity_low", entity_low],
+      ["entity_high", entity_high]
+    ]) {
+      if (!kindsOfEntity(entityId).length) {
+        throw new Error(`${key} must be one of these entity types: ${DOMAINS.join(", ")}.`);
+      }
+    }
+    const upperKinds = kindsOfEntity(entity_high);
+    const kinds = kindsOfEntity(entity_low).filter((kind) => upperKinds.includes(kind));
+    if (!kinds.length) {
+      throw new Error(
+        "entity_low and entity_high must hold the same kind of value: numbers, times, dates, or dates with times."
+      );
+    }
+    if (isSet(config.step) && !(Number(config.step) > 0)) {
+      throw new Error("step must be a number above 0.");
+    }
+    if (kinds.length === 1) {
+      kinds[0].validateConfig?.(config);
+    }
+  }
+
+  // src/entity-range-slider-editor.ts
+  var EDITOR_TAG = "entity-range-slider-editor";
   var __ready_dec, __config_dec, _hass_dec, _a, _init, _hass, __config, __ready;
   var EntityRangeSliderEditor = class extends (_a = i4, _hass_dec = [n4({ attribute: false })], __config_dec = [r5()], __ready_dec = [r5()], _a) {
     constructor() {

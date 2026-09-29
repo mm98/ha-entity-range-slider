@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   check:
-    name: Type check and build
+    name: Type check, build and test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -22,3 +22,13 @@ jobs:
       - run: npm run build
       - name: The committed bundle matches the source
         run: git diff --exit-code dist
+      - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - name: Keep the screenshots of failed browser tests
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results
+          path: test/e2e/test-results
+          retention-days: 7

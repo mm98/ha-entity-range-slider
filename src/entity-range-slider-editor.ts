@@ -4,7 +4,8 @@
 
 import { html, LitElement, nothing, type TemplateResult } from "lit";
 import { property, state } from "lit/decorators.js";
-import { type EditorConfig, POSITIONS, SHOW_OPTIONS } from "./config";
+import type { EditorConfig } from "./config";
+import { buildSchema, type SchemaOptions } from "./editor-schema";
 import { computePairName } from "./entity-pair";
 import {
 	fireEvent,
@@ -14,92 +15,11 @@ import {
 	type LovelaceCardEditor,
 	type ValueChangedEvent,
 } from "./home-assistant";
-import { hasTranslation, languageOf, translate, type TranslationKey } from "./i18n";
-import { DOMAINS, kindOf, kindsOfEntity, type SliderRangeDefaults } from "./kinds";
+import { hasTranslation, languageOf, translate } from "./i18n";
+import { kindOf, kindsOfEntity } from "./kinds";
 import { validateEditorConfig } from "./validators";
 
 export const EDITOR_TAG = "entity-range-slider-editor";
-
-interface SchemaOptions {
-	language: string;
-	defaults: SliderRangeDefaults;
-	defaultName?: string;
-	fullWidth: boolean;
-}
-
-// An ha-form select selector with the card's texts for the options.
-const selectSelector = (options: readonly string[], group: "show" | "position", language: string) => ({
-	select: {
-		mode: "dropdown",
-		options: options.map((value) => ({ value, label: translate(`${group}.${value}` as TranslationKey, language) })),
-	},
-});
-
-const buildSchema = ({ language, defaults, defaultName, fullWidth }: SchemaOptions) => {
-	const entity = { entity: { filter: { domain: DOMAINS } } };
-	return [
-		{ name: "entity_low", required: true, selector: entity },
-		{ name: "entity_high", required: true, selector: entity },
-		{
-			name: "content",
-			type: "expandable",
-			flatten: true,
-			expanded: true,
-			icon: "mdi:text-short",
-			schema: [
-				{ name: "name", selector: { entity_name: { default_name: defaultName } }, context: { entity: "entity_low" } },
-				{
-					name: "",
-					type: "grid",
-					schema: [
-						{ name: "icon", selector: { icon: {} }, context: { icon_entity: "entity_low" } },
-						{ name: "color", selector: { ui_color: { include_state: true, include_none: true } } },
-					],
-				},
-				{
-					name: "secondary_info",
-					selector: { ui_state_content: { allow_context: true } },
-					context: { filter_entity: "entity_low" },
-				},
-				{ name: "show", selector: selectSelector(SHOW_OPTIONS, "show", language) },
-				// A full width slider always shows the values below it.
-				{ name: "position", disabled: fullWidth, selector: selectSelector(POSITIONS, "position", language) },
-				{ name: "full_width", selector: { boolean: {} } },
-				{ name: "small", selector: { boolean: {} } },
-			],
-		},
-		{
-			name: "slider",
-			type: "expandable",
-			flatten: true,
-			icon: "mdi:tune-variant",
-			schema: [
-				{
-					name: "",
-					type: "grid",
-					schema: [
-						{ name: "min", selector: { text: {} }, default: defaults.min },
-						{ name: "max", selector: { text: {} }, default: defaults.max },
-						{ name: "step", selector: { number: { mode: "box", step: "any", min: 0 } }, default: defaults.step },
-						{ name: "unit", selector: { text: {} }, default: defaults.unit },
-					],
-				},
-				{ name: "push", selector: { boolean: {} } },
-			],
-		},
-		{
-			name: "interactions",
-			type: "expandable",
-			flatten: true,
-			icon: "mdi:gesture-tap",
-			schema: [
-				{ name: "tap_action", selector: { ui_action: { default_action: "more-info" } } },
-				{ name: "hold_action", selector: { ui_action: { default_action: "more-info" } } },
-				{ name: "double_tap_action", selector: { ui_action: { default_action: "none" } } },
-			],
-		},
-	];
-};
 
 export class EntityRangeSliderEditor extends LitElement implements LovelaceCardEditor {
 	@property({ attribute: false }) accessor hass: HomeAssistant | undefined;

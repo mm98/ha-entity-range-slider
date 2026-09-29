@@ -1,0 +1,8 @@
+// The tests also run in Node, so they get Node's types. The card does not.
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"types": ["node"]
+	},
+	"include": [".", "../src"]
+}

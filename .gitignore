@@ -1,1 +1,3 @@
 node_modules/
+test/e2e/test-results/
+test/e2e/page/build/
