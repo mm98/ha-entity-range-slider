@@ -13,7 +13,7 @@ export function validateEditorConfig(config: unknown): asserts config is EditorC
 		throw new Error("The settings must be a map.");
 	}
 	const values = config as Record<string, unknown>;
-	for (const key of ["entity_min", "entity_max", "icon", "unit"] as const) {
+	for (const key of ["entity_low", "entity_high", "icon", "unit"] as const) {
 		if (isSet(values[key]) && typeof values[key] !== "string") {
 			throw new Error(`${key} must be text.`);
 		}
@@ -39,26 +39,26 @@ export function validateEditorConfig(config: unknown): asserts config is EditorC
 // The config the card and the row can show.
 export function validateConfig(config: unknown): asserts config is EntityRangeSliderConfig {
 	validateEditorConfig(config);
-	const { entity_min, entity_max } = config;
-	if (!entity_min || !entity_max) {
-		throw new Error("Set both entity_min and entity_max.");
+	const { entity_low, entity_high } = config;
+	if (!entity_low || !entity_high) {
+		throw new Error("Set both entity_low and entity_high.");
 	}
-	if (entity_min === entity_max) {
-		throw new Error("entity_min and entity_max must be two different entities.");
+	if (entity_low === entity_high) {
+		throw new Error("entity_low and entity_high must be two different entities.");
 	}
 	for (const [key, entityId] of [
-		["entity_min", entity_min],
-		["entity_max", entity_max],
+		["entity_low", entity_low],
+		["entity_high", entity_high],
 	] as const) {
 		if (!kindsOfEntity(entityId).length) {
 			throw new Error(`${key} must be one of these entity types: ${DOMAINS.join(", ")}.`);
 		}
 	}
-	const upperKinds = kindsOfEntity(entity_max);
-	const kinds = kindsOfEntity(entity_min).filter((kind) => upperKinds.includes(kind));
+	const upperKinds = kindsOfEntity(entity_high);
+	const kinds = kindsOfEntity(entity_low).filter((kind) => upperKinds.includes(kind));
 	if (!kinds.length) {
 		throw new Error(
-			"entity_min and entity_max must hold the same kind of value: numbers, times, dates, or dates with times.",
+			"entity_low and entity_high must hold the same kind of value: numbers, times, dates, or dates with times.",
 		);
 	}
 	if (isSet(config.step) && !(Number(config.step) > 0)) {

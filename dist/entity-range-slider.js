@@ -1,4 +1,4 @@
-/* Entity range slider 0.5.0, https://github.com/mm98/ha-entity-range-slider */
+/* Entity range slider 0.6.0, https://github.com/mm98/ha-entity-range-slider */
 "use strict";
 (() => {
   var __create = Object.create;
@@ -106,7 +106,7 @@
   });
 
   // src/config.ts
-  var SHOW_OPTIONS = ["both", "lower", "upper", "none"];
+  var SHOW_OPTIONS = ["both", "low", "high", "none"];
   var POSITIONS = ["inline", "below"];
   var isSet = (value) => value !== void 0 && value !== null && value !== "";
 
@@ -403,7 +403,7 @@
         }
         const other = `${domain}.${[...words.slice(0, index), to, ...words.slice(index + 1)].join("_")}`;
         if (hass.states[other]) {
-          return isLower ? { entity_min: entityId, entity_max: other } : { entity_min: other, entity_max: entityId };
+          return isLower ? { entity_low: entityId, entity_high: other } : { entity_low: other, entity_high: entityId };
         }
       }
     }
@@ -420,7 +420,7 @@
       }
     }
     const numbers = candidates.filter((entityId) => kindsOfEntity(entityId).some((kind) => kind.id === "number"));
-    return { entity_min: numbers[0] ?? "", entity_max: numbers[1] ?? "" };
+    return { entity_low: numbers[0] ?? "", entity_high: numbers[1] ?? "" };
   };
   var computePairName = (hass, lower, upper) => {
     const nameOf = (stateObj) => hass.formatEntityName(stateObj, void 0) || stateObj.attributes.friendly_name || stateObj.entity_id;
@@ -1036,8 +1036,8 @@
       description: "En skyder med to håndtag, der sætter en nedre og en øvre entitet med tal, dato eller tid."
     },
     label: {
-      entity_min: "Entitet for den nedre værdi",
-      entity_max: "Entitet for den øvre værdi",
+      entity_low: "Entitet for den nedre værdi",
+      entity_high: "Entitet for den øvre værdi",
       min: "Laveste værdi på skyderen",
       max: "Højeste værdi på skyderen",
       step: "Trin",
@@ -1049,8 +1049,8 @@
       slider: "Skyder"
     },
     helper: {
-      entity_min: "Håndtaget for den nedre værdi ændrer denne entitet.",
-      entity_max: "Håndtaget for den øvre værdi ændrer denne entitet.",
+      entity_low: "Håndtaget for den nedre værdi ændrer denne entitet.",
+      entity_high: "Håndtaget for den øvre værdi ændrer denne entitet.",
       min: "Lad feltet stå tomt for standard. Tider som 06:00, datoer som 2026-10-01 eller +7d.",
       max: "Lad feltet stå tomt for standard. Tider som 22:00, datoer som 2026-12-31 eller +30d.",
       step: "Lad feltet stå tomt for standard. For tider i minutter, for datoer i dage.",
@@ -1062,8 +1062,8 @@
     },
     show: {
       both: "Begge værdier (standard)",
-      lower: "Nedre værdi",
-      upper: "Øvre værdi",
+      low: "Nedre værdi",
+      high: "Øvre værdi",
       none: "Ingen værdi"
     },
     position: {
@@ -1083,8 +1083,8 @@
       description: "Ein Schieberegler mit zwei Reglern, der eine untere und eine obere Entität mit Zahl, Datum oder Uhrzeit setzt."
     },
     label: {
-      entity_min: "Entität für den unteren Wert",
-      entity_max: "Entität für den oberen Wert",
+      entity_low: "Entität für den unteren Wert",
+      entity_high: "Entität für den oberen Wert",
       min: "Niedrigster Wert auf dem Schieberegler",
       max: "Höchster Wert auf dem Schieberegler",
       step: "Schrittweite",
@@ -1096,8 +1096,8 @@
       slider: "Schieberegler"
     },
     helper: {
-      entity_min: "Der Regler für den unteren Wert ändert diese Entität.",
-      entity_max: "Der Regler für den oberen Wert ändert diese Entität.",
+      entity_low: "Der Regler für den unteren Wert ändert diese Entität.",
+      entity_high: "Der Regler für den oberen Wert ändert diese Entität.",
       min: "Leer lassen für den Standardwert. Uhrzeiten wie 06:00, Datumsangaben wie 2026-10-01 oder +7d.",
       max: "Leer lassen für den Standardwert. Uhrzeiten wie 22:00, Datumsangaben wie 2026-12-31 oder +30d.",
       step: "Leer lassen für den Standardwert. Bei Uhrzeiten in Minuten, bei Datumsangaben in Tagen.",
@@ -1109,8 +1109,8 @@
     },
     show: {
       both: "Beide Werte (Standard)",
-      lower: "Unterer Wert",
-      upper: "Oberer Wert",
+      low: "Unterer Wert",
+      high: "Oberer Wert",
       none: "Kein Wert"
     },
     position: {
@@ -1130,8 +1130,8 @@
       description: "A slider with two handles that sets a lower and an upper number, date, or time entity."
     },
     label: {
-      entity_min: "Entity for the lower value",
-      entity_max: "Entity for the upper value",
+      entity_low: "Entity for the lower value",
+      entity_high: "Entity for the upper value",
       min: "Lowest value on the slider",
       max: "Highest value on the slider",
       step: "Step",
@@ -1143,8 +1143,8 @@
       slider: "Slider"
     },
     helper: {
-      entity_min: "The handle for the lower value sets this entity.",
-      entity_max: "The handle for the upper value sets this entity.",
+      entity_low: "The handle for the lower value sets this entity.",
+      entity_high: "The handle for the upper value sets this entity.",
       min: "Leave empty for the default. Times like 06:00, dates like 2026-10-01 or +7d.",
       max: "Leave empty for the default. Times like 22:00, dates like 2026-12-31 or +30d.",
       step: "Leave empty for the default. For times in minutes, for dates in days.",
@@ -1156,8 +1156,8 @@
     },
     show: {
       both: "Both values (default)",
-      lower: "Lower value",
-      upper: "Upper value",
+      low: "Lower value",
+      high: "Upper value",
       none: "No value"
     },
     position: {
@@ -1177,8 +1177,8 @@
       description: "Un control deslizante con dos controles que ajusta una entidad inferior y otra superior de número, fecha u hora."
     },
     label: {
-      entity_min: "Entidad para el valor inferior",
-      entity_max: "Entidad para el valor superior",
+      entity_low: "Entidad para el valor inferior",
+      entity_high: "Entidad para el valor superior",
       min: "Valor más bajo del control deslizante",
       max: "Valor más alto del control deslizante",
       step: "Tamaño del paso",
@@ -1190,8 +1190,8 @@
       slider: "Control deslizante"
     },
     helper: {
-      entity_min: "El control del valor inferior cambia esta entidad.",
-      entity_max: "El control del valor superior cambia esta entidad.",
+      entity_low: "El control del valor inferior cambia esta entidad.",
+      entity_high: "El control del valor superior cambia esta entidad.",
       min: "Déjalo vacío para usar el valor predeterminado. Horas como 06:00, fechas como 2026-10-01 o +7d.",
       max: "Déjalo vacío para usar el valor predeterminado. Horas como 22:00, fechas como 2026-12-31 o +30d.",
       step: "Déjalo vacío para usar el valor predeterminado. En minutos para las horas y en días para las fechas.",
@@ -1203,8 +1203,8 @@
     },
     show: {
       both: "Ambos valores (predeterminado)",
-      lower: "Valor inferior",
-      upper: "Valor superior",
+      low: "Valor inferior",
+      high: "Valor superior",
       none: "Ningún valor"
     },
     position: {
@@ -1238,7 +1238,7 @@
       throw new Error("The settings must be a map.");
     }
     const values = config;
-    for (const key of ["entity_min", "entity_max", "icon", "unit"]) {
+    for (const key of ["entity_low", "entity_high", "icon", "unit"]) {
       if (isSet(values[key]) && typeof values[key] !== "string") {
         throw new Error(`${key} must be text.`);
       }
@@ -1262,26 +1262,26 @@
   }
   function validateConfig(config) {
     validateEditorConfig(config);
-    const { entity_min, entity_max } = config;
-    if (!entity_min || !entity_max) {
-      throw new Error("Set both entity_min and entity_max.");
+    const { entity_low, entity_high } = config;
+    if (!entity_low || !entity_high) {
+      throw new Error("Set both entity_low and entity_high.");
     }
-    if (entity_min === entity_max) {
-      throw new Error("entity_min and entity_max must be two different entities.");
+    if (entity_low === entity_high) {
+      throw new Error("entity_low and entity_high must be two different entities.");
     }
     for (const [key, entityId] of [
-      ["entity_min", entity_min],
-      ["entity_max", entity_max]
+      ["entity_low", entity_low],
+      ["entity_high", entity_high]
     ]) {
       if (!kindsOfEntity(entityId).length) {
         throw new Error(`${key} must be one of these entity types: ${DOMAINS.join(", ")}.`);
       }
     }
-    const upperKinds = kindsOfEntity(entity_max);
-    const kinds = kindsOfEntity(entity_min).filter((kind) => upperKinds.includes(kind));
+    const upperKinds = kindsOfEntity(entity_high);
+    const kinds = kindsOfEntity(entity_low).filter((kind) => upperKinds.includes(kind));
     if (!kinds.length) {
       throw new Error(
-        "entity_min and entity_max must hold the same kind of value: numbers, times, dates, or dates with times."
+        "entity_low and entity_high must hold the same kind of value: numbers, times, dates, or dates with times."
       );
     }
     if (isSet(config.step) && !(Number(config.step) > 0)) {
@@ -1303,8 +1303,8 @@
   var buildSchema = ({ language, defaults, defaultName, fullWidth }) => {
     const entity = { entity: { filter: { domain: DOMAINS } } };
     return [
-      { name: "entity_min", required: true, selector: entity },
-      { name: "entity_max", required: true, selector: entity },
+      { name: "entity_low", required: true, selector: entity },
+      { name: "entity_high", required: true, selector: entity },
       {
         name: "content",
         type: "expandable",
@@ -1312,19 +1312,19 @@
         expanded: true,
         icon: "mdi:text-short",
         schema: [
-          { name: "name", selector: { entity_name: { default_name: defaultName } }, context: { entity: "entity_min" } },
+          { name: "name", selector: { entity_name: { default_name: defaultName } }, context: { entity: "entity_low" } },
           {
             name: "",
             type: "grid",
             schema: [
-              { name: "icon", selector: { icon: {} }, context: { icon_entity: "entity_min" } },
+              { name: "icon", selector: { icon: {} }, context: { icon_entity: "entity_low" } },
               { name: "color", selector: { ui_color: { include_state: true, include_none: true } } }
             ]
           },
           {
             name: "secondary_info",
             selector: { ui_state_content: { allow_context: true } },
-            context: { filter_entity: "entity_min" }
+            context: { filter_entity: "entity_low" }
           },
           { name: "show", selector: selectSelector(SHOW_OPTIONS, "show", language) },
           // A full width slider always shows the values below it.
@@ -1421,9 +1421,9 @@
     // The form changes with the language, the entities and full_width. It is
     // only built again when one of them changed, so the form keeps its state.
     _currentSchema(hass, config) {
-      const lower = config.entity_min ? hass.states[config.entity_min] : void 0;
-      const upper = config.entity_max ? hass.states[config.entity_max] : void 0;
-      const kinds = config.entity_min ? kindsOfEntity(config.entity_min) : [];
+      const lower = config.entity_low ? hass.states[config.entity_low] : void 0;
+      const upper = config.entity_high ? hass.states[config.entity_high] : void 0;
+      const kinds = config.entity_low ? kindsOfEntity(config.entity_low) : [];
       const kind = lower && kindOf(lower) || (kinds.length === 1 ? kinds[0] : void 0);
       const options = {
         language: languageOf(hass),
@@ -1665,9 +1665,9 @@
   var hasValue = (stateObj) => !NO_VALUE_STATES.includes(stateObj.state);
   var computeSliderModel = (config, hass) => {
     const language = languageOf(hass);
-    const lower = hass.states[config.entity_min];
-    const upper = hass.states[config.entity_max];
-    const missing = [config.entity_min, config.entity_max].find((entityId) => !hass.states[entityId]);
+    const lower = hass.states[config.entity_low];
+    const upper = hass.states[config.entity_high];
+    const missing = [config.entity_low, config.entity_high].find((entityId) => !hass.states[entityId]);
     if (missing) {
       return { warning: createEntityNotFoundWarning(hass, missing) };
     }
@@ -1787,7 +1787,7 @@
       if (!this._config || !this.hass || !this._ready || this._dragging) {
         return false;
       }
-      return ["_config", "_ready", "_narrow", "_redraw"].some((key) => changed.has(key)) || hasHassChanged(this._drawnHass, this.hass, [this._config.entity_min, this._config.entity_max]);
+      return ["_config", "_ready", "_narrow", "_redraw"].some((key) => changed.has(key)) || hasHassChanged(this._drawnHass, this.hass, [this._config.entity_low, this._config.entity_high]);
     }
     // shouldUpdate only lets an update through with _config and hass set, and
     // willUpdate sets _result, so the ! below in willUpdate, render and updated
@@ -1811,11 +1811,11 @@
       const { lower, upper, range, show } = model;
       const below = model.position === "below";
       const full = this.full;
-      const shown = { both: [lower, upper], lower: [lower], upper: [upper], none: [] }[show];
+      const shown = { both: [lower, upper], low: [lower], high: [upper], none: [] }[show];
       const text = (value) => config.small && value ? b2`<small>${value}</small>` : value;
       const rowConfig = {
         ...config,
-        entity: config.entity_min,
+        entity: config.entity_low,
         name: isSet(config.name) ? config.name : computePairName(hass, lower, upper)
       };
       return b2`
@@ -2042,7 +2042,7 @@
 	`);
 
   // src/entity-range-slider.ts
-  var VERSION = "0.5.0";
+  var VERSION = "0.6.0";
   var REPOSITORY = "https://github.com/mm98/ha-entity-range-slider";
   var defineOnce = (tag, element) => {
     if (!customElements.get(tag)) {

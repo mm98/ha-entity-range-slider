@@ -3,8 +3,8 @@
 		"description": "Un control deslizante con dos controles que ajusta una entidad inferior y otra superior de número, fecha u hora."
 	},
 	"label": {
-		"entity_min": "Entidad para el valor inferior",
-		"entity_max": "Entidad para el valor superior",
+		"entity_low": "Entidad para el valor inferior",
+		"entity_high": "Entidad para el valor superior",
 		"min": "Valor más bajo del control deslizante",
 		"max": "Valor más alto del control deslizante",
 		"step": "Tamaño del paso",
@@ -16,8 +16,8 @@
 		"slider": "Control deslizante"
 	},
 	"helper": {
-		"entity_min": "El control del valor inferior cambia esta entidad.",
-		"entity_max": "El control del valor superior cambia esta entidad.",
+		"entity_low": "El control del valor inferior cambia esta entidad.",
+		"entity_high": "El control del valor superior cambia esta entidad.",
 		"min": "Déjalo vacío para usar el valor predeterminado. Horas como 06:00, fechas como 2026-10-01 o +7d.",
 		"max": "Déjalo vacío para usar el valor predeterminado. Horas como 22:00, fechas como 2026-12-31 o +30d.",
 		"step": "Déjalo vacío para usar el valor predeterminado. En minutos para las horas y en días para las fechas.",
@@ -29,8 +29,8 @@
 	},
 	"show": {
 		"both": "Ambos valores (predeterminado)",
-		"lower": "Valor inferior",
-		"upper": "Valor superior",
+		"low": "Valor inferior",
+		"high": "Valor superior",
 		"none": "Ningún valor"
 	},
 	"position": {

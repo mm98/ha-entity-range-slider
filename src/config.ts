@@ -6,7 +6,7 @@
 import type { EntityName, LovelaceCardConfig } from "./home-assistant";
 
 // Which values the card shows.
-export const SHOW_OPTIONS = ["both", "lower", "upper", "none"] as const;
+export const SHOW_OPTIONS = ["both", "low", "high", "none"] as const;
 
 // Where the values show: next to the slider, like the value of Home
 // Assistant's number slider, or below it.
@@ -17,8 +17,8 @@ export type Position = (typeof POSITIONS)[number];
 
 // What the visual editor holds: the entities may still be missing.
 export interface EditorConfig extends LovelaceCardConfig {
-	entity_min?: string;
-	entity_max?: string;
+	entity_low?: string;
+	entity_high?: string;
 	name?: EntityName;
 	icon?: string;
 	min?: string | number;
@@ -34,8 +34,8 @@ export interface EditorConfig extends LovelaceCardConfig {
 
 // What the card and the row show.
 export interface EntityRangeSliderConfig extends EditorConfig {
-	entity_min: string;
-	entity_max: string;
+	entity_low: string;
+	entity_high: string;
 }
 
 // Whether a setting has a value. An emptied field in the editor counts as none.

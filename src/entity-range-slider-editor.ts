@@ -38,8 +38,8 @@ const selectSelector = (options: readonly string[], group: "show" | "position", 
 const buildSchema = ({ language, defaults, defaultName, fullWidth }: SchemaOptions) => {
 	const entity = { entity: { filter: { domain: DOMAINS } } };
 	return [
-		{ name: "entity_min", required: true, selector: entity },
-		{ name: "entity_max", required: true, selector: entity },
+		{ name: "entity_low", required: true, selector: entity },
+		{ name: "entity_high", required: true, selector: entity },
 		{
 			name: "content",
 			type: "expandable",
@@ -47,19 +47,19 @@ const buildSchema = ({ language, defaults, defaultName, fullWidth }: SchemaOptio
 			expanded: true,
 			icon: "mdi:text-short",
 			schema: [
-				{ name: "name", selector: { entity_name: { default_name: defaultName } }, context: { entity: "entity_min" } },
+				{ name: "name", selector: { entity_name: { default_name: defaultName } }, context: { entity: "entity_low" } },
 				{
 					name: "",
 					type: "grid",
 					schema: [
-						{ name: "icon", selector: { icon: {} }, context: { icon_entity: "entity_min" } },
+						{ name: "icon", selector: { icon: {} }, context: { icon_entity: "entity_low" } },
 						{ name: "color", selector: { ui_color: { include_state: true, include_none: true } } },
 					],
 				},
 				{
 					name: "secondary_info",
 					selector: { ui_state_content: { allow_context: true } },
-					context: { filter_entity: "entity_min" },
+					context: { filter_entity: "entity_low" },
 				},
 				{ name: "show", selector: selectSelector(SHOW_OPTIONS, "show", language) },
 				// A full width slider always shows the values below it.
@@ -150,9 +150,9 @@ export class EntityRangeSliderEditor extends LitElement implements LovelaceCardE
 	// The form changes with the language, the entities and full_width. It is
 	// only built again when one of them changed, so the form keeps its state.
 	private _currentSchema(hass: HomeAssistant, config: EditorConfig) {
-		const lower = config.entity_min ? hass.states[config.entity_min] : undefined;
-		const upper = config.entity_max ? hass.states[config.entity_max] : undefined;
-		const kinds = config.entity_min ? kindsOfEntity(config.entity_min) : [];
+		const lower = config.entity_low ? hass.states[config.entity_low] : undefined;
+		const upper = config.entity_high ? hass.states[config.entity_high] : undefined;
+		const kinds = config.entity_low ? kindsOfEntity(config.entity_low) : [];
 		const kind = (lower && kindOf(lower)) || (kinds.length === 1 ? kinds[0] : undefined);
 		const options: SchemaOptions = {
 			language: languageOf(hass),

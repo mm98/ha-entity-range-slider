@@ -27,9 +27,9 @@ export const hasValue = (stateObj: HassEntity): boolean => !NO_VALUE_STATES.incl
 
 export const computeSliderModel = (config: EntityRangeSliderConfig, hass: HomeAssistant): SliderModelResult => {
 	const language = languageOf(hass);
-	const lower = hass.states[config.entity_min];
-	const upper = hass.states[config.entity_max];
-	const missing = [config.entity_min, config.entity_max].find((entityId) => !hass.states[entityId]);
+	const lower = hass.states[config.entity_low];
+	const upper = hass.states[config.entity_high];
+	const missing = [config.entity_low, config.entity_high].find((entityId) => !hass.states[entityId]);
 	if (missing) {
 		return { warning: createEntityNotFoundWarning(hass, missing) };
 	}
