@@ -3,8 +3,8 @@
 		"description": "A slider with two handles that sets a lower and an upper number, date, or time entity."
 	},
 	"label": {
-		"entity_min": "Entity for the lower value",
-		"entity_max": "Entity for the upper value",
+		"entity_low": "Entity for the lower value",
+		"entity_high": "Entity for the upper value",
 		"min": "Lowest value on the slider",
 		"max": "Highest value on the slider",
 		"step": "Step",
@@ -16,8 +16,8 @@
 		"slider": "Slider"
 	},
 	"helper": {
-		"entity_min": "The handle for the lower value sets this entity.",
-		"entity_max": "The handle for the upper value sets this entity.",
+		"entity_low": "The handle for the lower value sets this entity.",
+		"entity_high": "The handle for the upper value sets this entity.",
 		"min": "Leave empty for the default. Times like 06:00, dates like 2026-10-01 or +7d.",
 		"max": "Leave empty for the default. Times like 22:00, dates like 2026-12-31 or +30d.",
 		"step": "Leave empty for the default. For times in minutes, for dates in days.",
@@ -29,8 +29,8 @@
 	},
 	"show": {
 		"both": "Both values (default)",
-		"lower": "Lower value",
-		"upper": "Upper value",
+		"low": "Lower value",
+		"high": "Upper value",
 		"none": "No value"
 	},
 	"position": {

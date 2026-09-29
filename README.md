@@ -55,8 +55,8 @@ The same card in YAML:
 
 ```yaml
 type: custom:entity-range-slider
-entity_min: input_number.heating_low
-entity_max: input_number.heating_high
+entity_low: input_number.heating_low
+entity_high: input_number.heating_high
 name: Heating
 position: below
 ```
@@ -71,8 +71,8 @@ The default for numbers, like Home Assistant's number slider. The values get the
 
 ```yaml
 type: custom:entity-range-slider
-entity_min: input_number.fan_speed_low
-entity_max: input_number.fan_speed_high
+entity_low: input_number.fan_speed_low
+entity_high: input_number.fan_speed_high
 name: Fan speed
 ```
 
@@ -84,8 +84,8 @@ The lower value under the start of the slider, the upper value under the end. Th
 
 ```yaml
 type: custom:entity-range-slider
-entity_min: input_number.heating_low
-entity_max: input_number.heating_high
+entity_low: input_number.heating_low
+entity_high: input_number.heating_high
 name: Heating
 position: below
 ```
@@ -98,8 +98,8 @@ position: below
 
 ```yaml
 type: custom:entity-range-slider
-entity_min: input_number.heating_low
-entity_max: input_number.heating_high
+entity_low: input_number.heating_low
+entity_high: input_number.heating_high
 name: Heating
 position: below
 small: true
@@ -113,8 +113,8 @@ small: true
 
 ```yaml
 type: custom:entity-range-slider
-entity_min: input_number.heating_low
-entity_max: input_number.heating_high
+entity_low: input_number.heating_low
+entity_high: input_number.heating_high
 name: Heating
 full_width: true
 ```
@@ -130,8 +130,8 @@ type: entities
 entities:
   - input_number.fan_speed
   - type: custom:entity-range-slider-row
-    entity_min: input_number.fan_speed_low
-    entity_max: input_number.fan_speed_high
+    entity_low: input_number.fan_speed_low
+    entity_high: input_number.fan_speed_high
     name: Fan speed range
 ```
 
@@ -143,8 +143,8 @@ The slider runs from 00:00 to 23:59 in steps of 15 minutes, unless you set `min`
 
 ```yaml
 type: custom:entity-range-slider
-entity_min: input_datetime.heating_on
-entity_max: input_datetime.heating_off
+entity_low: input_datetime.heating_on
+entity_high: input_datetime.heating_off
 name: Heating hours
 ```
 
@@ -156,8 +156,8 @@ The slider runs from today to 30 days from today in steps of one day, unless you
 
 ```yaml
 type: custom:entity-range-slider
-entity_min: input_datetime.vacation_start
-entity_max: input_datetime.vacation_end
+entity_low: input_datetime.vacation_start
+entity_high: input_datetime.vacation_end
 name: Vacation
 max: "+60d"
 ```
@@ -170,8 +170,8 @@ The slider runs from today to 30 days from today in steps of one hour, unless yo
 
 ```yaml
 type: custom:entity-range-slider
-entity_min: input_datetime.charging_start
-entity_max: input_datetime.charging_end
+entity_low: input_datetime.charging_start
+entity_high: input_datetime.charging_end
 name: Car charging
 max: "+3d"
 step: 30
@@ -183,28 +183,28 @@ small: true
 
 | Setting | What it does |
 |---|---|
-| `entity_min` | The entity the handle for the lower value sets. Required. |
-| `entity_max` | The entity the handle for the upper value sets. Required. |
+| `entity_low` | The entity the handle for the lower value sets. Required. |
+| `entity_high` | The entity the handle for the upper value sets. Required. |
 | `name` | Name shown next to the icon. By default the words both entity names share, for example "Heating" for "Heating low" and "Heating high". |
-| `icon` | Icon at the start of the row. By default the icon of `entity_min`. |
+| `icon` | Icon at the start of the row. By default the icon of `entity_low`. |
 | `color` | Color of the icon, like in Home Assistant's entities card. |
-| `secondary_info` | A second line under the name, for example when `entity_min` last changed, like in Home Assistant's [entities card](https://www.home-assistant.io/dashboards/entities/). |
+| `secondary_info` | A second line under the name, for example when `entity_low` last changed, like in Home Assistant's [entities card](https://www.home-assistant.io/dashboards/entities/). |
 | `min` | Lowest value on the slider. See **Limits and steps** below. |
 | `max` | Highest value on the slider. See **Limits and steps** below. |
 | `step` | How much a value changes per step. See **Limits and steps** below. |
 | `unit` | For numbers: the unit shown after the values. By default the unit of the entities. |
-| `show` | Which values to show: `both` (default), `lower`, `upper` or `none`. |
+| `show` | Which values to show: `both` (default), `low`, `high` or `none`. |
 | `position` | Where to show the values: `inline` (next to the slider) or `below`. By default `inline` for numbers and `below` for times and dates, which are too long for the space next to the slider. With `full_width: true` the values are always below. On very narrow cards the values next to the slider are left out, like on the number slider. |
 | `full_width` | `true` lets the slider also use the space next to it, so it reaches the end of the row. Values next to the slider then move below it. `false` by default: the slider has the size of Home Assistant's number slider, also when the values are below or hidden. |
 | `small` | `true` shows the values in small text. `false` by default. |
 | `push` | `true` lets a handle push the other one along. `false` by default. See **Handles** below. |
-| `tap_action`, `hold_action`, `double_tap_action` | What a tap, a long press or a double tap on the icon or name does. By default a tap or long press opens the details of `entity_min`. See Home Assistant's [actions](https://www.home-assistant.io/dashboards/actions/). |
+| `tap_action`, `hold_action`, `double_tap_action` | What a tap, a long press or a double tap on the icon or name does. By default a tap or long press opens the details of `entity_low`. See Home Assistant's [actions](https://www.home-assistant.io/dashboards/actions/). |
 
 ## Limits and steps
 
 | Kind | `min` and `max` | `step` |
 |---|---|---|
-| Numbers | Numbers. By default the minimum of `entity_min` and the maximum of `entity_max`. | By default the step of `entity_min`. |
+| Numbers | Numbers. By default the minimum of `entity_low` and the maximum of `entity_high`. | By default the step of `entity_low`. |
 | Times | Times like `06:00`. By default `00:00` and `23:59`. | Minutes, 15 by default. |
 | Dates | Dates like `2026-10-01`, or relative to today: `today`, `+7d`, `-7d`. By default `today` and `+30d`. | Days, 1 by default. |
 | Dates with times | Like dates, also with a time: `2026-10-01 18:00`. By default `today` and `+30d`. | Minutes, 60 by default. |

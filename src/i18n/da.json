@@ -3,8 +3,8 @@
 		"description": "En skyder med to håndtag, der sætter en nedre og en øvre entitet med tal, dato eller tid."
 	},
 	"label": {
-		"entity_min": "Entitet for den nedre værdi",
-		"entity_max": "Entitet for den øvre værdi",
+		"entity_low": "Entitet for den nedre værdi",
+		"entity_high": "Entitet for den øvre værdi",
 		"min": "Laveste værdi på skyderen",
 		"max": "Højeste værdi på skyderen",
 		"step": "Trin",
@@ -16,8 +16,8 @@
 		"slider": "Skyder"
 	},
 	"helper": {
-		"entity_min": "Håndtaget for den nedre værdi ændrer denne entitet.",
-		"entity_max": "Håndtaget for den øvre værdi ændrer denne entitet.",
+		"entity_low": "Håndtaget for den nedre værdi ændrer denne entitet.",
+		"entity_high": "Håndtaget for den øvre værdi ændrer denne entitet.",
 		"min": "Lad feltet stå tomt for standard. Tider som 06:00, datoer som 2026-10-01 eller +7d.",
 		"max": "Lad feltet stå tomt for standard. Tider som 22:00, datoer som 2026-12-31 eller +30d.",
 		"step": "Lad feltet stå tomt for standard. For tider i minutter, for datoer i dage.",
@@ -29,8 +29,8 @@
 	},
 	"show": {
 		"both": "Begge værdier (standard)",
-		"lower": "Nedre værdi",
-		"upper": "Øvre værdi",
+		"low": "Nedre værdi",
+		"high": "Øvre værdi",
 		"none": "Ingen værdi"
 	},
 	"position": {

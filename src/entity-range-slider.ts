@@ -2,7 +2,7 @@
  * Entity range slider for Home Assistant dashboards.
  *
  * One slider with two handles. The handle for the lower value sets
- * entity_min, the handle for the upper value sets entity_max. Both hold
+ * entity_low, the handle for the upper value sets entity_high. Both hold
  * numbers, times, dates or dates with times. It uses Home Assistant's own
  * slider and entity row, so it looks like the built-in number slider and
  * follows the theme.

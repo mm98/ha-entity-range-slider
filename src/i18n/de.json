@@ -3,8 +3,8 @@
 		"description": "Ein Schieberegler mit zwei Reglern, der eine untere und eine obere Entität mit Zahl, Datum oder Uhrzeit setzt."
 	},
 	"label": {
-		"entity_min": "Entität für den unteren Wert",
-		"entity_max": "Entität für den oberen Wert",
+		"entity_low": "Entität für den unteren Wert",
+		"entity_high": "Entität für den oberen Wert",
 		"min": "Niedrigster Wert auf dem Schieberegler",
 		"max": "Höchster Wert auf dem Schieberegler",
 		"step": "Schrittweite",
@@ -16,8 +16,8 @@
 		"slider": "Schieberegler"
 	},
 	"helper": {
-		"entity_min": "Der Regler für den unteren Wert ändert diese Entität.",
-		"entity_max": "Der Regler für den oberen Wert ändert diese Entität.",
+		"entity_low": "Der Regler für den unteren Wert ändert diese Entität.",
+		"entity_high": "Der Regler für den oberen Wert ändert diese Entität.",
 		"min": "Leer lassen für den Standardwert. Uhrzeiten wie 06:00, Datumsangaben wie 2026-10-01 oder +7d.",
 		"max": "Leer lassen für den Standardwert. Uhrzeiten wie 22:00, Datumsangaben wie 2026-12-31 oder +30d.",
 		"step": "Leer lassen für den Standardwert. Bei Uhrzeiten in Minuten, bei Datumsangaben in Tagen.",
@@ -29,8 +29,8 @@
 	},
 	"show": {
 		"both": "Beide Werte (Standard)",
-		"lower": "Unterer Wert",
-		"upper": "Oberer Wert",
+		"low": "Unterer Wert",
+		"high": "Oberer Wert",
 		"none": "Kein Wert"
 	},
 	"position": {

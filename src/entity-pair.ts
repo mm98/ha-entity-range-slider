@@ -34,8 +34,8 @@ const PAIR_WORDS = [
 ];
 
 export interface EntityPair {
-	entity_min: string;
-	entity_max: string;
+	entity_low: string;
+	entity_high: string;
 }
 
 // The pair an entity belongs to, when the other entity exists.
@@ -56,7 +56,7 @@ export const findEntityPair = (hass: HomeAssistant, entityId: string): EntityPai
 			}
 			const other = `${domain}.${[...words.slice(0, index), to, ...words.slice(index + 1)].join("_")}`;
 			if (hass.states[other]) {
-				return isLower ? { entity_min: entityId, entity_max: other } : { entity_min: other, entity_max: entityId };
+				return isLower ? { entity_low: entityId, entity_high: other } : { entity_low: other, entity_high: entityId };
 			}
 		}
 	}
@@ -76,7 +76,7 @@ export const stubConfig = (hass: HomeAssistant, entities: string[] = [], entitie
 		}
 	}
 	const numbers = candidates.filter((entityId) => kindsOfEntity(entityId).some((kind) => kind.id === "number"));
-	return { entity_min: numbers[0] ?? "", entity_max: numbers[1] ?? "" };
+	return { entity_low: numbers[0] ?? "", entity_high: numbers[1] ?? "" };
 };
 
 // Default name: the words both entity names share, for example "Heating low"

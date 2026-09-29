@@ -181,7 +181,7 @@ export class EntityRangeSliderRow extends LitElement implements LovelaceRow {
 		}
 		return (
 			["_config", "_ready", "_narrow", "_redraw"].some((key) => changed.has(key)) ||
-			hasHassChanged(this._drawnHass, this.hass, [this._config.entity_min, this._config.entity_max])
+			hasHassChanged(this._drawnHass, this.hass, [this._config.entity_low, this._config.entity_high])
 		);
 	}
 
@@ -209,11 +209,11 @@ export class EntityRangeSliderRow extends LitElement implements LovelaceRow {
 		const { lower, upper, range, show } = model;
 		const below = model.position === "below";
 		const full = this.full;
-		const shown: HassEntity[] = { both: [lower, upper], lower: [lower], upper: [upper], none: [] }[show];
+		const shown: HassEntity[] = { both: [lower, upper], low: [lower], high: [upper], none: [] }[show];
 		const text = (value: string) => (config.small && value ? html`<small>${value}</small>` : value);
 		const rowConfig = {
 			...config,
-			entity: config.entity_min,
+			entity: config.entity_low,
 			name: isSet(config.name) ? config.name : computePairName(hass, lower, upper),
 		};
 		return html`
